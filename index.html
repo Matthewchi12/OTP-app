@@ -16,8 +16,21 @@
         <button type="button" id="tabLogin" class="tab active">Login</button>
         <button type="button" id="tabRegister" class="tab">Create Account</button>
       </div>
-      <form id="loginForm"><input id="loginEmail" type="email" class="input" placeholder="Email" required /><input id="loginPass" type="password" class="input" placeholder="Password" required /><button type="submit" class="auth-btn">Login</button></form>
-      <form id="registerForm" class="hidden"><input id="regEmail" type="email" class="input" placeholder="Email" required /><input id="regPass" type="password" class="input" placeholder="Password min 6" required /><input id="regPass2" type="password" class="input" placeholder="Confirm" required /><button type="submit" class="auth-btn">Create Account</button></form>
+      <form id="loginForm">
+        <input id="loginEmail" type="email" class="input" placeholder="Email" required />
+        <input id="loginPass" type="password" class="input" placeholder="Password" required />
+        <button type="submit" class="auth-btn">Login</button>
+        <!-- ✅ ADDED 1: Forgot Password Link (fixes your blocking issue) -->
+        <p style="text-align:center; margin-top:12px;">
+          <button type="button" id="forgotBtn" style="background:none; border:none; color:#00C896; font-size:14px; cursor:pointer; text-decoration:underline;">Forgot Password?</button>
+        </p>
+      </form>
+      <form id="registerForm" class="hidden">
+        <input id="regEmail" type="email" class="input" placeholder="Email" required />
+        <input id="regPass" type="password" class="input" placeholder="Password min 6" required />
+        <input id="regPass2" type="password" class="input" placeholder="Confirm" required />
+        <button type="submit" class="auth-btn">Create Account</button>
+      </form>
     </div>
   </div>
   <div id="app" class="hidden">
@@ -40,22 +53,18 @@
       <h2 id="servicesTitle">Services</h2>
       <section id="services"></section>
     </main>
-    <!-- UPDATED PAYSTACK MODAL WITH CUSTOM AMOUNT -->
     <div id="topupModal" class="modal hidden">
       <div class="modal-content"><div class="handle"></div><h3>💳 Deposit with Paystack</h3><p class="current">Balance: <strong id="modalBalance">₦0</strong> • <span id="modalCountry"></span></p>
         <div style="margin:15px 0;">
           <input id="payEmail" type="email" class="input" placeholder="Confirm your email" style="width:100%; margin-bottom:10px;" />
-          
           <label style="font-size:13px; font-weight:600;">Enter amount you want to pay (NGN) 👇</label>
           <input id="customAmount" type="number" min="100" class="input" placeholder="e.g. 700, 1500, 10000" style="width:100%; margin:6px 0 10px 0; padding:14px; font-size:18px; border:2px solid #00C896; border-radius:8px;" />
-          
           <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
             <button onclick="setAmount(500)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦500</button>
             <button onclick="setAmount(1000)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦1k</button>
             <button onclick="setAmount(2000)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦2k</button>
             <button onclick="setAmount(5000)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦5k</button>
           </div>
-
           <button onclick="payCustom()" class="auth-btn" style="width:100%; padding:16px; font-size:18px; background:#00C896; font-weight:bold;">💳 Pay Now</button>
           <p id="payStatus" style="margin-top:12px; font-size:13px; text-align:center;"></p>
         </div>
@@ -78,17 +87,12 @@
         payEmailInput.value = loggedEmail.trim();
       }
     });
-
-    function setAmount(val){
-      document.getElementById('customAmount').value = val;
-    }
-
+    function setAmount(val){ document.getElementById('customAmount').value = val; }
     function payCustom(){
       const amt = document.getElementById('customAmount').value;
       if(!amt || Number(amt) < 100) return alert("Enter amount minimum ₦100");
       payNow(Number(amt));
     }
-
     async function payNow(amount){
       const emailInput = document.getElementById('payEmail');
       const status = document.getElementById('payStatus');
@@ -103,12 +107,137 @@
         });
         const data = await res.json();
         if(data.status && data.data.authorization_url){
+          localStorage.setItem('pending_pay_ref', data.data.reference);
+          localStorage.setItem('pending_pay_amount', amount);
           window.location.href = data.data.authorization_url;
         } else {
           status.textContent = "❌ Error: " + (data.message || JSON.stringify(data));
         }
       } catch(e){
         status.textContent = "❌ Network error: " + e.message;
+      }
+    }
+  </script>
+
+  <!-- ✅ ADDED 2 & 3: FIREBASE + WALLET SAFE LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB-Wgn8wwpPk5q5sITaHd2tN-GRQj-ZBW4",
+      authDomain: "otphub-d1272.firebaseapp.com",
+      projectId: "otphub-d1272",
+      storageBucket: "otphub-d1272.firebasestorage.app",
+      messagingSenderId: "516462339713",
+      appId: "1:516462339713:web:04b6044c5bfc403cd4cf80",
+      measurementId: "G-BJ04X6WJSX"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    function showToast(msg, type='success'){
+      const container = document.getElementById('toasts');
+      const t = document.createElement('div');
+      t.className = `toast ${type}`;
+      t.textContent = msg;
+      t.style.cssText = 'background:#333;color:white;padding:12px 18px;border-radius:8px;margin:10px;position:fixed;top:20px;right:20px;z-index:9999;';
+      if(type==='error') t.style.background = '#e74c3c';
+      if(type==='success') t.style.background = '#00C896';
+      container.appendChild(t);
+      setTimeout(()=>t.remove(),4000);
+    }
+
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    tabLogin.addEventListener('click', ()=>{
+      tabLogin.classList.add('active');
+      tabRegister.classList.remove('active');
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+    });
+    tabRegister.addEventListener('click', ()=>{
+      tabRegister.classList.add('active');
+      tabLogin.classList.remove('active');
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+    });
+
+    onAuthStateChanged(auth, (user)=>{
+      const authScreen = document.getElementById('authScreen');
+      const mainApp = document.getElementById('app');
+      const userEmailSpan = document.getElementById('userEmail');
+      if(user){
+        if(authScreen) authScreen.classList.add('hidden');
+        if(mainApp) mainApp.classList.remove('hidden');
+        if(userEmailSpan) userEmailSpan.textContent = user.email;
+        showToast("Welcome " + user.email);
+        const urlParams = new URLSearchParams(window.location.search);
+        if(urlParams.get('reference') || urlParams.get('trxref')){
+          verifyPayment(urlParams.get('reference') || urlParams.get('trxref'));
+        }
+      } else {
+        if(authScreen) authScreen.classList.remove('hidden');
+        if(mainApp) mainApp.classList.add('hidden');
+      }
+    });
+
+    registerForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = document.getElementById('regEmail').value.trim();
+      const pass = document.getElementById('regPass').value;
+      const pass2 = document.getElementById('regPass2').value;
+      if(pass !== pass2){ showToast("Passwords don't match", "error"); return; }
+      if(pass.length < 6){ showToast("Password min 6 chars", "error"); return; }
+      try{
+        await createUserWithEmailAndPassword(auth, email, pass);
+        showToast("Account created! ✅");
+      }catch(err){ showToast(err.message, "error"); }
+    });
+
+    loginForm.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPass').value;
+      try{
+        await signInWithEmailAndPassword(auth, email, pass);
+      }catch(err){ showToast("Login failed: " + err.message, "error"); }
+    });
+
+    document.getElementById('forgotBtn').addEventListener('click', async ()=>{
+      let email = document.getElementById('loginEmail').value.trim();
+      if(!email){ email = prompt("Enter your email to reset password:"); }
+      if(!email || !email.includes('@')){ showToast("Enter valid email", "error"); return; }
+      try{
+        await sendPasswordResetEmail(auth, email);
+        showToast("Reset email sent to " + email + " 📧 Check inbox & spam!");
+      }catch(err){ showToast(err.message, "error"); }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+      await signOut(auth);
+      showToast("Logged out");
+    });
+
+    async function verifyPayment(reference){
+      if(!reference) return;
+      showToast("Verifying payment... ⏳");
+      try{
+        const res = await fetch(`https://otp-backend-amwc.onrender.com/api/pay/verify/${reference}`);
+        const data = await res.json();
+        if(data.status && data.data.status === 'success'){
+          showToast("Payment verified! Wallet credited ✅ ₦" + (data.data.amount/100));
+          localStorage.removeItem('pending_pay_ref');
+          window.history.replaceState({}, document.title, window.location.pathname);
+        } else {
+          showToast("Payment not successful: " + data.data.gateway_response, "error");
+        }
+      }catch(e){
+        showToast("Network issue verifying. Money is safe with Paystack, will auto-verify.", "error");
       }
     }
   </script>
