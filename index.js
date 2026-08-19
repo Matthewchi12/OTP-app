@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
       d.innerHTML=`<div class="service-icon" style="background:${s.color}20">${s.icon}</div><div class="service-info"><div class="service-name">${s.name}</div><div class="service-meta">${selected.flag} ${selected.prefix}</div></div><div><div style="font-weight:800">${money(local.price)}</div><button data-id="${s.id}" class="buy-btn">Buy</button></div>`;
       els.services.appendChild(d);
     });
-    // REMOVED DEMO FUNDING - PAYSTACK HANDLES IT NOW
     if(!state.active){els.activeOrder.classList.add("hidden");return;} els.activeOrder.classList.remove("hidden"); els.orderService.textContent=state.active.icon+" "+state.active.name; els.phoneNumber.textContent=state.active.phone; els.orderStatus.textContent=selected.name + " - REAL NUMBER";
     if(state.active.otp){els.otpBox.classList.remove("hidden"); els.waitingText.classList.add("hidden"); els.otpCode.textContent=state.active.otp;}else{els.otpBox.classList.add("hidden"); els.waitingText.classList.remove("hidden"); els.waitingText.textContent="Waiting for REAL SMS from 5sim...";}
   }
@@ -75,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 5000);
   }
 
-  // PAYSTACK FUNCTIONS - ADDED
   window.setAmount = function(val){
     const input = document.getElementById("customAmount");
     if(input) input.value = val;
@@ -135,7 +133,20 @@ document.addEventListener("DOMContentLoaded", () => {
   
   els.services.onclick=async e=>{
     const b=e.target.closest(".buy-btn"); if(!b) return; 
-    if(state.balance<local.price){els.topupModal.classList.remove("hidden"); return toast("Low balance");}
+    // ✅ ADDED: Check if balance less than product price
+    if(state.balance < local.price){
+      // ✅ ADDED: Show message in phone number area
+      els.activeOrder.classList.remove("hidden");
+      if(els.orderService) els.orderService.textContent = b.dataset.id + " • " + selected.name;
+      if(els.phoneNumber) els.phoneNumber.textContent = "insufficient balance add money";
+      if(els.orderStatus) els.orderStatus.textContent = "Low Balance";
+      if(els.otpBox) els.otpBox.classList.add("hidden");
+      if(els.waitingText) els.waitingText.classList.add("hidden");
+      // ✅ ADDED: Open deposit modal
+      els.topupModal.classList.remove("hidden");
+      toast("insufficient balance add money");
+      return;
+    }
     const serviceId = b.dataset.id;
     b.textContent="Buying..."; b.disabled=true;
     try{
@@ -146,7 +157,21 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({country: selected.code, service: serviceId})
       });
       const data = await res.json();
-      if(!data.success) {b.textContent="Buy"; b.disabled=false; return toast(data.message || "Buy failed - check 5sim balance");}
+      if(!data.success) {
+        b.textContent="Buy"; b.disabled=false;
+        // ✅ ADDED: Handle backend insufficient balance
+        if(data.message && data.message.toLowerCase().includes("insufficient")){
+          els.activeOrder.classList.remove("hidden");
+          if(els.orderService) els.orderService.textContent = serviceId + " • " + selected.name;
+          if(els.phoneNumber) els.phoneNumber.textContent = "insufficient balance add money";
+          if(els.orderStatus) els.orderStatus.textContent = "Low Balance";
+          if(els.otpBox) els.otpBox.classList.add("hidden");
+          if(els.waitingText) els.waitingText.classList.add("hidden");
+          els.topupModal.classList.remove("hidden");
+          return toast("insufficient balance add money");
+        }
+        return toast(data.message || "Buy failed - check 5sim balance");
+      }
       state.balance-=local.price; 
       if(data.balances) { currentUser.balances = data.balances; localStorage.setItem("otphub_user", JSON.stringify(currentUser)); state.balance = data.balances[local.code] || state.balance; }
       state.active={id:data.order.id, name:serviceId, icon:"💬", phone:data.order.phone, otp:data.order.otp || null, expiresAt:Date.now()+900000};
