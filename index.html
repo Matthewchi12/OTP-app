@@ -7,21 +7,23 @@
 <link rel="stylesheet" href="index.css"/>
 <style>
 :root{--green:#00C896;--bg:#0a0a0a;--card:#151515;--border:#252525}
-body{background:var(--bg);color:#fff}
+body{background:var(--bg);color:#fff;margin:0;font-family:system-ui}
 .services-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
 .service-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .service-card:hover{border-color:var(--green)}
 .service-left{display:flex;align-items:center;gap:10px}
-.service-logo{width:40px;height:40px;border-radius:10px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #222}
-.service-logo img{width:24px;height:24px;object-fit:contain}
+.service-logo{width:42px;height:42px;border-radius:10px;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;border:1px solid #222}
+.service-logo img{width:26px;height:26px;object-fit:contain}
 .service-name{font-weight:700;font-size:13px}
 .service-meta{font-size:11px;color:#888;margin-top:2px}
 .buy-btn{background:var(--green);color:#000;border:none;padding:7px 14px;border-radius:20px;font-weight:800;font-size:11px;cursor:pointer}
-.country-row{display:flex;gap:8px;overflow-x:auto;padding:12px}
+.country-row{display:flex;gap:8px;overflow-x:auto;padding:12px;scrollbar-width:none}
 .country-chip{white-space:nowrap;background:var(--card);border:1px solid var(--border);padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer}
 .country-chip.active{background:var(--green);color:#000;border-color:var(--green);font-weight:700}
 .search-box{padding:0 12px;margin:10px 0}
-.search-box input{width:100%;padding:14px 16px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:#fff}
+.search-box input{width:100%;padding:14px 16px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:#fff;outline:none}
+.active-card{margin:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.otp-box{background:#000;border:1px solid var(--green);padding:14px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
 </style>
 </head>
 <body>
@@ -29,26 +31,27 @@ body{background:var(--bg);color:#fff}
 <div id="authScreen" class="auth-screen">
 <div class="auth-card">
 <div class="logo" style="color:#00C896;font-weight:900;font-size:28px">OTPHub.</div>
-<p style="color:#888;margin:8px 0 20px">50 Countries • Instant OTP</p>
-<div class="tabs"><button id="tabLogin" class="tab active">Login</button><button id="tabRegister" class="tab">Create Account</button></div>
-<form id="loginForm"><input id="loginEmail" type="email" class="input" placeholder="Email" required/><input id="loginPass" type="password" class="input" placeholder="Password" required/><button type="submit" class="auth-btn">Login</button><p style="text-align:center;margin-top:12px"><button type="button" id="forgotBtn" style="background:none;border:none;color:#00C896;font-size:13px;cursor:pointer;text-decoration:underline">Forgot Password?</button></p></form>
-<form id="registerForm" class="hidden"><input id="regEmail" type="email" class="input" placeholder="Email" required/><input id="regPass" type="password" class="input" placeholder="Password min 6" required/><input id="regPass2" type="password" class="input" placeholder="Confirm" required/><button type="submit" class="auth-btn">Create Account</button></form>
+<p style="color:#888;margin:8px 0 20px;font-size:13px">50 Countries • Instant OTP</p>
+<div class="tabs" style="display:flex;gap:8px;margin-bottom:16px"><button id="tabLogin" class="tab active" style="flex:1;padding:10px;border-radius:10px;background:#00C896;color:#000;border:none;font-weight:700">Login</button><button id="tabRegister" class="tab" style="flex:1;padding:10px;border-radius:10px;background:#222;color:#fff;border:none">Create Account</button></div>
+<form id="loginForm"><input id="loginEmail" type="email" class="input" placeholder="Email" required style="width:100%;padding:12px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><input id="loginPass" type="password" class="input" placeholder="Password" required style="width:100%;padding:12px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><button type="submit" class="auth-btn" style="width:100%;padding:14px;background:#00C896;color:#000;border:none;border-radius:10px;font-weight:900;margin-top:8px">Login</button><p style="text-align:center;margin-top:12px"><button type="button" id="forgotBtn" style="background:none;border:none;color:#00C896;font-size:13px;cursor:pointer;text-decoration:underline">Forgot Password?</button></p></form>
+<form id="registerForm" class="hidden" style="display:none"><input id="regEmail" type="email" class="input" placeholder="Email" required style="width:100%;padding:12px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><input id="regPass" type="password" class="input" placeholder="Password min 6" required style="width:100%;padding:12px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><input id="regPass2" type="password" class="input" placeholder="Confirm" required style="width:100%;padding:12px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><button type="submit" class="auth-btn" style="width:100%;padding:14px;background:#00C896;color:#000;border:none;border-radius:10px;font-weight:900;margin-top:8px">Create Account</button></form>
 </div>
 </div>
 <div id="app" class="hidden">
-<header style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #222"><div style="color:#00C896;font-weight:900;font-size:22px">OTPHub.</div><div style="display:flex;gap:8px;align-items:center"><span id="userEmail" style="font-size:11px;color:#888"></span><button id="walletBtn" style="background:#00C896;color:#000;border:none;padding:8px 14px;border-radius:20px;font-weight:800"><span id="walletBalance">₦0</span></button><button id="logoutBtn" style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:20px">Logout</button></div></header>
+<header style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #222"><div style="color:#00C896;font-weight:900;font-size:22px">OTPHub.</div><div style="display:flex;gap:8px;align-items:center"><span id="userEmail" style="font-size:11px;color:#888;max-width:90px;overflow:hidden;text-overflow:ellipsis"></span><button id="walletBtn" style="background:#00C896;color:#000;border:none;padding:8px 14px;border-radius:20px;font-weight:800"><span id="walletBalance">₦0</span></button><button id="logoutBtn" style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:20px;font-size:12px">Logout</button></div></header>
 <main>
-<section style="padding:20px 12px"><div id="localBadge" style="background:#151515;border:1px solid #222;padding:6px 12px;border-radius:20px;display:inline-block;font-size:11px;margin-bottom:12px">📍 Nigeria • ₦1,000</div><h1 style="font-size:28px">Buy OTP for <span style="color:#00C896">₦1,000</span></h1><p id="heroSub" style="color:#888;font-size:13px;margin-top:6px">50 countries • WhatsApp, Telegram & more</p><button id="depositBtn" style="width:100%;padding:16px;background:#00C896;color:#000;border:none;border-radius:12px;font-weight:900;margin-top:14px">💳 Deposit / Fund Wallet</button></section>
-<div class="search-box"><input id="phoneSearch" type="text" placeholder="Search: USA, WhatsApp..."/></div>
+<section style="padding:20px 12px"><div id="localBadge" style="background:#151515;border:1px solid #222;padding:6px 12px;border-radius:20px;display:inline-block;font-size:11px;margin-bottom:12px">📍 Nigeria • ₦1,000 per OTP</div><h1 style="font-size:28px;line-height:1.1;margin:0">Buy OTP for <span style="color:#00C896">₦1,000</span></h1><p id="heroSub" style="color:#888;font-size:13px;margin-top:6px">50 countries • WhatsApp, Telegram, Google & more</p><button id="depositBtn" style="width:100%;padding:16px;background:#00C896;color:#000;border:none;border-radius:12px;font-weight:900;font-size:15px;margin-top:14px">💳 Deposit / Fund Wallet</button></section>
+<div class="search-box"><input id="phoneSearch" type="text" placeholder="Search: USA, WhatsApp, Telegram..."/></div>
 <div id="phoneCountryRow" class="country-row"></div>
-<section id="activeOrder" class="hidden" style="margin:12px;background:#151515;border:1px solid #222;border-radius:14px;padding:14px"><div style="display:flex;justify-content:space-between"><span id="orderService" style="font-weight:700"></span><span id="timer" style="background:#000;padding:4px 10px;border-radius:20px;font-size:12px">15:00</span></div><div id="phoneNumber" style="font-weight:900;font-size:18px;margin:12px 0"></div><div id="orderStatus" style="font-size:12px;color:#888"></div><div id="otpBox" class="hidden" style="background:#000;border:1px solid #00C896;padding:14px;border-radius:10px;display:flex;justify-content:space-between;align-items:center;margin-top:10px"><div><div style="font-size:10px;color:#888">OTP CODE</div><strong id="otpCode" style="font-size:22px"></strong></div><span onclick="navigator.clipboard.writeText(document.getElementById('otpCode').textContent)" style="background:#00C896;color:#000;padding:8px 16px;border-radius:20px;font-weight:800;cursor:pointer">COPY</span></div><div id="waitingText" style="margin-top:10px;font-size:12px;color:#aaa">Waiting for SMS...</div></section>
-<h2 style="padding:12px 12px 0;font-size:14px;color:#aaa">POPULAR SERVICES</h2>
+<section id="activeOrder" class="active-card hidden"><div style="display:flex;justify-content:space-between;align-items:center"><span id="orderService" style="font-weight:700"></span><span id="timer" style="background:#000;padding:4px 10px;border-radius:20px;font-size:12px">15:00</span></div><div id="phoneNumber" style="font-weight:900;font-size:18px;margin:12px 0"></div><div id="orderStatus" style="font-size:12px;color:#888"></div><div id="otpBox" class="otp-box hidden"><div><div style="font-size:10px;color:#888;letter-spacing:1px">OTP CODE</div><strong id="otpCode" style="font-size:22px"></strong></div><span onclick="copyOtp()" style="background:#00C896;color:#000;padding:8px 16px;border-radius:20px;font-weight:800;font-size:12px;cursor:pointer">COPY</span></div><div id="waitingText" style="margin-top:10px;font-size:13px;color:#aaa"></div></section>
+<h2 style="padding:12px 12px 0;font-size:12px;color:#666">POPULAR SERVICES</h2>
 <section id="services" class="services-grid"></section>
 </main>
-<div id="topupModal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:end;justify-content:center"><div style="background:#111;border:1px solid #222;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px"><h3>💳 Fund Wallet</h3><input id="payEmail" type="email" placeholder="Email" style="width:100%;padding:12px;margin:8px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><input id="customAmount" type="number" placeholder="Amount" style="width:100%;padding:14px;border:2px solid #00C896;border-radius:10px;background:#000;color:#fff"/><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0"><button onclick="setAmount(500)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦500</button><button onclick="setAmount(1000)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦1k</button><button onclick="setAmount(2000)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦2k</button><button onclick="setAmount(5000)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦5k</button></div><button onclick="payCustom()" style="width:100%;padding:16px;background:#00C896;color:#000;font-weight:900;border:none;border-radius:12px">Pay with Paystack</button><p id="payStatus" style="text-align:center;margin-top:10px;font-size:12px"></p><button id="closeModalBtn" style="width:100%;padding:12px;background:#222;color:#fff;border:none;border-radius:10px;margin-top:10px">Close</button></div></div>
+<div id="topupModal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;align-items:end;justify-content:center"><div style="background:#111;border:1px solid #222;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px"><h3 style="margin:0 0 4px">💳 Fund Wallet</h3><input id="payEmail" type="email" placeholder="Email" style="width:100%;padding:12px;margin:8px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><input id="customAmount" type="number" placeholder="Amount e.g 1000" style="width:100%;padding:14px;border:2px solid #00C896;border-radius:10px;background:#000;color:#fff"/><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0"><button onclick="setAmount(500)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦500</button><button onclick="setAmount(1000)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦1k</button><button onclick="setAmount(2000)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦2k</button><button onclick="setAmount(5000)" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px">₦5k</button></div><button onclick="payCustom()" style="width:100%;padding:16px;background:#00C896;color:#000;font-weight:900;border:none;border-radius:12px">Pay with Paystack</button><p id="payStatus" style="text-align:center;margin-top:10px;font-size:12px"></p><button id="closeModalBtn" style="width:100%;padding:12px;background:#222;color:#fff;border:none;border-radius:10px;margin-top:10px">Close</button></div></div>
 </div>
 <script>
-const countries=["Nigeria","USA","UK","Canada","Germany","France","India","South Africa","Kenya","Ghana","USA Virtual","Poland","Indonesia","Brazil","Turkey","Netherlands","Spain","Australia","UAE"];
+function copyOtp(){const c=document.getElementById('otpCode').textContent;if(!c)return;navigator.clipboard.writeText(c);toast("Copied: "+c);}
+const countries=["Nigeria","USA","UK","Canada","Germany","France","India","South Africa","Kenya","Ghana","USA Virtual","Poland","Indonesia","Brazil","Turkey","Netherlands","Spain","Australia","UAE","Philippines","Mexico","Romania","Pakistan","Bangladesh"];
 let selectedCountry="Nigeria";
 function renderCountries(f=""){const r=document.getElementById('phoneCountryRow');if(!r)return;r.innerHTML=countries.filter(c=>c.toLowerCase().includes(f.toLowerCase())).map(c=>`<div class="country-chip ${c===selectedCountry?'active':''}" onclick="selectCountry('${c}')">${c}</div>`).join('');}
 window.selectCountry=function(c){selectedCountry=c;renderCountries();toast(c+" selected");}
@@ -67,54 +70,59 @@ const servicesList=[
 {name:"Uber",id:"uber",price:"₦800",logo:"https://cdn.simpleicons.org/uber/000000"},
 {name:"Amazon",id:"amazon",price:"₦900",logo:"https://cdn.simpleicons.org/amazon/FF9900"},
 ];
-function renderServices(f=""){const el=document.getElementById('services');if(!el)return;const l=servicesList.filter(s=>s.name.toLowerCase().includes(f.toLowerCase()));el.innerHTML=l.map(s=>`<div class="service-card" onclick="buyService('${s.id}','${s.name}')"><div class="service-left"><div class="service-logo"><img src="${s.logo}"/></div><div><div class="service-name">${s.name}</div><div class="service-meta">${selectedCountry} • ${s.price}</div></div></div><button class="buy-btn">BUY</button></div>`).join('');}
+function renderServices(f=""){const el=document.getElementById('services');if(!el)return;el.innerHTML=servicesList.filter(s=>s.name.toLowerCase().includes(f.toLowerCase())).map(s=>`<div class="service-card" onclick="buyService('${s.id}','${s.name}')"><div class="service-left"><div class="service-logo"><img src="${s.logo}"/></div><div><div class="service-name">${s.name}</div><div class="service-meta">${selectedCountry} • ${s.price}</div></div></div><button class="buy-btn">BUY</button></div>`).join('');}
 renderServices();
-document.getElementById('phoneSearch').addEventListener('input',e=>{renderCountries(e.target.value);renderServices(e.target.value);});
+document.getElementById('phoneSearch')?.addEventListener('input',e=>{renderCountries(e.target.value);renderServices(e.target.value);});
 let currentOrderId=null;let pollTimer=null;
-window.buyService=async function(id,name){
-  const email=document.getElementById('userEmail').textContent.trim();
-  document.getElementById('orderService').textContent=name+" • "+selectedCountry;
-  document.getElementById('phoneNumber').textContent="Checking availability...";
+function showUnavailable(serviceName){
+  document.getElementById('phoneNumber').innerHTML=`<span style="color:#ff4444">❌ Number unavailable</span>`;
+  document.getElementById('waitingText').innerHTML=`<div style="background:#1a0000;border:1px solid #ff3333;border-radius:10px;padding:12px;margin-top:8px"><div style="color:#ff4444;font-weight:800;font-size:14px">No available ${serviceName} in ${selectedCountry}</div><div style="color:#aaa;font-size:11px;margin-top:4px">Provider out of stock • Try another country</div></div>`;
+  toast(`Number unavailable: No ${serviceName} in ${selectedCountry}`,"err");
+}
+window.buyService=async function(serviceId, serviceName){
+  const email=document.getElementById('userEmail').textContent.trim().toLowerCase();
+  if(!email){toast("Please login first","err");return;}
+  document.getElementById('orderService').textContent=serviceName+" • "+selectedCountry;
+  document.getElementById('phoneNumber').textContent="⏳ Checking availability...";
   document.getElementById('orderStatus').textContent="Contacting provider...";
   document.getElementById('activeOrder').classList.remove('hidden');
   document.getElementById('otpBox').classList.add('hidden');
-  document.getElementById('waitingText').textContent="⏳ Searching for number...";
+  document.getElementById('waitingText').textContent="Searching for number in "+selectedCountry+"...";
   document.getElementById('activeOrder').scrollIntoView({behavior:'smooth'});
-  toast("Buying "+name+" in "+selectedCountry+"...");
   try{
-    let res=await fetch('https://otp-backend-amwc.onrender.com/api/order/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,service:id,country:selectedCountry})});
-    let data=await res.json();
-    if(!data || !data.success){
-      const r2=await fetch('https://otp-backend-amwc.onrender.com/api/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,service:id,country:selectedCountry})});
-      data=await r2.json();
+    let data=null;
+    try{
+      const r1=await fetch('https://otp-backend-amwc.onrender.com/api/order/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,service:serviceId.toLowerCase(),country:selectedCountry.toLowerCase()})});
+      const t1=await r1.text(); try{ data=JSON.parse(t1); }catch{ data={message:t1} }
+    }catch(e){}
+    const hasNumber=(d)=>d&&(d.number||d.phone||d.phoneNumber||d.data?.number);
+    if(!hasNumber(data)){
+      try{
+        const r2=await fetch('https://otp-backend-amwc.onrender.com/api/buy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,service:serviceId.toLowerCase(),country:selectedCountry.toLowerCase()})});
+        const t2=await r2.text(); let d2; try{ d2=JSON.parse(t2); }catch{ d2={message:t2} }
+        if(hasNumber(d2)) data=d2; else if(!data) data=d2;
+      }catch(e){}
     }
-    console.log(data);
-    if(!data || data.error==="no_numbers" || (data.message&&data.message.toLowerCase().includes("no available")) || data.available===false){
-      document.getElementById('phoneNumber').textContent="❌ No available";
-      document.getElementById('waitingText').innerHTML=`<span style="color:#ff4444;font-weight:700">No available ${name} in ${selectedCountry}</span><br><span style="font-size:11px;color:#888">Try another country</span>`;
-      toast(`No available ${name} in ${selectedCountry}`,"err");return;
-    }
+    const msg=(data?.message||"").toLowerCase();
+    const isUnavailable=!data||data.error==="no_numbers"||data.available===false||msg.includes("no available")||msg.includes("pattern")||msg.includes("unavailable");
+    if(isUnavailable||!hasNumber(data)){ showUnavailable(serviceName); return; }
     const realNumber=data.number||data.phone||data.phoneNumber||data.data?.number;
     const orderId=data.orderId||data.id||data.order_id;
+    const otpImmediate=data.otp||data.code;
     if(realNumber){
       document.getElementById('phoneNumber').textContent=realNumber;
       document.getElementById('orderStatus').textContent="Number active • Waiting for SMS";
       document.getElementById('waitingText').textContent="📱 Waiting for OTP...";
       toast("Number: "+realNumber);
-      if(orderId) startPolling(orderId);
-      if(data.otp) showOtp(data.otp);
-    }
-  }catch(err){
-    document.getElementById('phoneNumber').textContent="❌ Error";
-    document.getElementById('waitingText').textContent=err.message;
-    toast("Buy failed: "+err.message,"err");
-  }
+      if(otpImmediate) showOtp(otpImmediate); else if(orderId) startPollingOtp(orderId);
+    }else{ showUnavailable(serviceName); }
+  }catch(err){ showUnavailable(serviceName); }
 };
-function showOtp(code){document.getElementById('otpCode').textContent=code;document.getElementById('otpBox').classList.remove('hidden');document.getElementById('waitingText').textContent="✅ OTP Received!";toast("OTP: "+code);if(pollTimer)clearInterval(pollTimer);}
-function startPolling(orderId){if(pollTimer)clearInterval(pollTimer);let a=0;pollTimer=setInterval(async()=>{a++;if(a>40){clearInterval(pollTimer);return;}try{const r=await fetch(`https://otp-backend-amwc.onrender.com/api/order/${orderId}/otp`);const d=await r.json();if(d.otp||d.code)showOtp(d.otp||d.code);}catch(e){}},5000);}
-window.setAmount=function(v){document.getElementById('customAmount').value=v};
-window.payCustom=function(){const a=document.getElementById('customAmount').value;if(!a||Number(a)<100)return alert("Min ₦100");payNow(Number(a))};
-async function payNow(amount){const email=(document.getElementById('payEmail').value.trim()||document.getElementById('userEmail').textContent.trim());if(!email.includes('@')){alert("Enter email");return;}document.getElementById('payStatus').textContent="Redirecting...";try{const res=await fetch('https://otp-backend-amwc.onrender.com/api/pay/initialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,amount})});const data=await res.json();if(data.status&&data.data.authorization_url){window.location.href=data.data.authorization_url;}else{document.getElementById('payStatus').textContent="Error";}}catch(e){document.getElementById('payStatus').textContent=e.message;}}
+function showOtp(code){document.getElementById('otpCode').textContent=code;document.getElementById('otpBox').classList.remove('hidden');document.getElementById('waitingText').innerHTML=`<span style="color:#00C896;font-weight:800">✅ OTP Received!</span>`;toast("OTP: "+code);if(pollTimer)clearInterval(pollTimer);}
+function startPollingOtp(orderId){if(pollTimer)clearInterval(pollTimer);let a=0;pollTimer=setInterval(async()=>{a++;if(a>36){clearInterval(pollTimer);return;}try{const r=await fetch(`https://otp-backend-amwc.onrender.com/api/order/${orderId}/otp`);const d=await r.json();const code=d.otp||d.code||d.data?.otp;if(code)showOtp(code);}catch(e){}},5000);}
+window.setAmount=function(v){document.getElementById('customAmount').value=v;};
+window.payCustom=function(){const a=document.getElementById('customAmount').value;if(!a||Number(a)<100)return alert("Min ₦100");payNow(Number(a));};
+async function payNow(amount){const email=(document.getElementById('payEmail').value.trim()||document.getElementById('userEmail').textContent.trim()).toLowerCase();if(!email.includes('@')){alert("Enter email");return;}document.getElementById('payStatus').textContent="Redirecting...";try{const res=await fetch('https://otp-backend-amwc.onrender.com/api/pay/initialize',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,amount})});const data=await res.json();if(data.status&&data.data.authorization_url){window.location.href=data.data.authorization_url;}else{document.getElementById('payStatus').textContent="Error";}}catch(e){document.getElementById('payStatus').textContent=e.message;}}
 document.getElementById('depositBtn').onclick=()=>{document.getElementById('topupModal').classList.remove('hidden');};
 document.getElementById('walletBtn').onclick=()=>{document.getElementById('topupModal').classList.remove('hidden');};
 document.getElementById('closeModalBtn').onclick=()=>document.getElementById('topupModal').classList.add('hidden');
@@ -125,13 +133,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 const firebaseConfig={apiKey:"AIzaSyB-Wgn8wwpPk5q5sITaHd2tN-GRQj-ZBW4",authDomain:"otphub-d1272.firebaseapp.com",projectId:"otphub-d1272",storageBucket:"otphub-d1272.firebasestorage.app",messagingSenderId:"516462339713",appId:"1:516462339713:web:04b6044c5bfc403cd4cf80"};
 const app=initializeApp(firebaseConfig);const auth=getAuth(app);
-function t(m,e='ok'){const c=document.getElementById('toasts');const d=document.createElement('div');d.textContent=m;d.style.cssText=`padding:12px 18px;border-radius:10px;margin:8px;color:#fff;background:${e==='err'?'#e74c3c':'#00C896'}`;c.appendChild(d);setTimeout(()=>d.remove(),4000);}
-document.getElementById('tabLogin').onclick=()=>{document.getElementById('tabLogin').classList.add('active');document.getElementById('tabRegister').classList.remove('active');document.getElementById('loginForm').classList.remove('hidden');document.getElementById('registerForm').classList.add('hidden');};
-document.getElementById('tabRegister').onclick=()=>{document.getElementById('tabRegister').classList.add('active');document.getElementById('tabLogin').classList.remove('active');document.getElementById('registerForm').classList.remove('hidden');document.getElementById('loginForm').classList.add('hidden');};
-onAuthStateChanged(auth,u=>{const a=document.getElementById('authScreen');const b=document.getElementById('app');if(u){a.classList.add('hidden');b.classList.remove('hidden');document.getElementById('userEmail').textContent=u.email;}else{a.classList.remove('hidden');b.classList.add('hidden');}});
-document.getElementById('registerForm').onsubmit=async(e)=>{e.preventDefault();const email=document.getElementById('regEmail').value.trim();const p=document.getElementById('regPass').value;const p2=document.getElementById('regPass2').value;if(p!==p2){t("No match",'err');return;}try{await createUserWithEmailAndPassword(auth,email,p);t("Created!");document.getElementById('tabLogin').click();}catch(err){t(err.message,'err');}};
-document.getElementById('loginForm').onsubmit=async(e)=>{e.preventDefault();const email=document.getElementById('loginEmail').value.trim();const p=document.getElementById('loginPass').value;try{await signInWithEmailAndPassword(auth,email,p);t("Login ok");}catch(err){t(err.message,'err');}};
-document.getElementById('forgotBtn').onclick=async()=>{let email=document.getElementById('loginEmail').value.trim();if(!email)email=prompt("Enter email");try{await sendPasswordResetEmail(auth,email);t("Reset sent! Check SPAM");}catch(err){t(err.message,'err');}};
+function toast2(m,t='ok'){const c=document.getElementById('toasts');const d=document.createElement('div');d.textContent=m;d.style.cssText=`padding:12px 18px;border-radius:10px;margin:8px;color:#fff;background:${t==='err'?'#e74c3c':'#00C896'}`;c.appendChild(d);setTimeout(()=>d.remove(),4000);}
+document.getElementById('tabLogin').onclick=()=>{document.getElementById('tabLogin').style.background='#00C896';document.getElementById('loginForm').style.display='block';document.getElementById('registerForm').style.display='none';};
+document.getElementById('tabRegister').onclick=()=>{document.getElementById('tabRegister').style.background='#00C896';document.getElementById('registerForm').style.display='block';document.getElementById('loginForm').style.display='none';};
+onAuthStateChanged(auth,user=>{const a=document.getElementById('authScreen');const b=document.getElementById('app');if(user){a.classList.add('hidden');b.classList.remove('hidden');document.getElementById('userEmail').textContent=user.email;}else{a.classList.remove('hidden');b.classList.add('hidden');}});
+document.getElementById('registerForm').onsubmit=async(e)=>{e.preventDefault();const email=document.getElementById('regEmail').value.trim();const p=document.getElementById('regPass').value;const p2=document.getElementById('regPass2').value;if(p!==p2){toast2("No match",'err');return;}try{await createUserWithEmailAndPassword(auth,email,p);toast2("Created!");}catch(err){toast2(err.message,'err');}};
+document.getElementById('loginForm').onsubmit=async(e)=>{e.preventDefault();const email=document.getElementById('loginEmail').value.trim();const p=document.getElementById('loginPass').value;try{await signInWithEmailAndPassword(auth,email,p);toast2("Login ok");}catch(err){toast2(err.message,'err');}};
+document.getElementById('forgotBtn').onclick=async()=>{let email=document.getElementById('loginEmail').value.trim();if(!email)email=prompt("Enter email");try{await sendPasswordResetEmail(auth,email);toast2("Reset sent! Check SPAM");}catch(err){toast2(err.message,'err');}};
 document.getElementById('logoutBtn').onclick=async()=>{await signOut(auth);};
 </script>
 </body>
