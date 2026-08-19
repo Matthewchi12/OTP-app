@@ -3,53 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OTPHub</title>
+  <title>OTPHub - Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="toasts"></div>
 
-  <header class="header">
-    <div class="logo">OTPHub.</div>
-    <button id="walletBtn" class="wallet"><span id="walletBalance">₦0</span> • Top up</button>
-  </header>
-
-  <main>
-    <section class="hero">
-      <h1>Buy OTP for <span id="heroPrice">₦1,000</span></h1>
-      <p id="heroSub"></p>
-    </section>
-
-    <div id="countryRow" class="country-row"></div>
-
-    <section id="activeOrder" class="active-card hidden">
-      <div class="active-head">
-        <span id="orderService"></span>
-        <span id="timer">15:00</span>
+  <!-- AUTH SCREEN -->
+  <div id="authScreen" class="auth-screen">
+    <div class="auth-card">
+      <div class="logo">OTPHub.</div>
+      <p class="auth-sub">Create account to start buying numbers</p>
+      
+      <div class="tabs">
+        <button id="tabLogin" class="tab active">Login</button>
+        <button id="tabRegister" class="tab">Create Account</button>
       </div>
-      <div class="timer-bar"><div id="timerProgress"></div></div>
-      <div id="phoneNumber" class="phone"></div>
-      <div id="orderStatus" class="status"></div>
-      <div id="otpBox" class="otp-box hidden">
-        <div><div class="otp-label">OTP CODE</div><strong id="otpCode"></strong></div>
-        <span class="copy-pill">TAP TO COPY</span>
+
+      <form id="loginForm" class="auth-form">
+        <input id="loginEmail" type="email" class="input" placeholder="Email address" required />
+        <input id="loginPass" type="password" class="input" placeholder="Password" required />
+        <button type="submit" class="auth-btn">Login</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <input id="regEmail" type="email" class="input" placeholder="Email address" required />
+        <input id="regPass" type="password" class="input" placeholder="Password (min 6 chars)" required />
+        <input id="regPass2" type="password" class="input" placeholder="Confirm password" required />
+        <button type="submit" class="auth-btn">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" class="hidden">
+    <header class="header">
+      <div class="logo">OTPHub.</div>
+      <div class="header-right">
+        <span id="userEmail" class="user-email"></span>
+        <button id="walletBtn" class="wallet"><span id="walletBalance">₦0</span></button>
+        <button id="logoutBtn" class="logout">Logout</button>
       </div>
-      <div id="waitingText" class="waiting"><span class="dot"></span> Waiting for SMS... checking every 3s</div>
-      <button id="cancelOrderBtn" class="cancel-btn">Cancel Number</button>
-    </section>
+    </header>
 
-    <h2 id="servicesTitle"></h2>
-    <section id="services"></section>
-  </main>
+    <main>
+      <section class="hero">
+        <h1>Buy OTP for <span id="heroPrice">₦1,000</span></h1>
+        <p id="heroSub"></p>
+      </section>
+      <div id="countryRow" class="country-row"></div>
 
-  <div id="topupModal" class="modal hidden">
-    <div class="modal-content">
-      <div class="handle"></div>
-      <h3>Fund Wallet <span id="modalCountry"></span></h3>
-      <p class="current">Current: <strong id="modalBalance"></strong></p>
-      <div id="topupOptions"></div>
-      <button id="closeModalBtn" class="close-btn">Close</button>
+      <section id="activeOrder" class="active-card hidden">
+        <div class="active-head"><span id="orderService"></span><span id="timer">15:00</span></div>
+        <div class="timer-bar"><div id="timerProgress"></div></div>
+        <div id="phoneNumber" class="phone"></div>
+        <div id="orderStatus" class="status"></div>
+        <div id="otpBox" class="otp-box hidden"><div><div class="otp-label">OTP CODE</div><strong id="otpCode"></strong></div><span class="copy-pill">COPY</span></div>
+        <div id="waitingText" class="waiting"><span class="dot"></span> Waiting for SMS...</div>
+        <button id="cancelOrderBtn" class="cancel-btn">Cancel</button>
+      </section>
+
+      <h2 id="servicesTitle"></h2>
+      <section id="services"></section>
+    </main>
+
+    <div id="topupModal" class="modal hidden">
+      <div class="modal-content">
+        <div class="handle"></div>
+        <h3>Fund Wallet <span id="modalCountry"></span></h3>
+        <p class="current">Current: <strong id="modalBalance"></strong></p>
+        <div id="topupOptions"></div>
+        <button id="closeModalBtn" class="close-btn">Close</button>
+      </div>
     </div>
   </div>
 
