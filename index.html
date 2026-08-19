@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OTPHub</title>
+  <title>OTPHub - 50 Countries</title>
   <link rel="stylesheet" href="index.css" />
 </head>
 <body>
@@ -12,7 +12,7 @@
   <div id="authScreen" class="auth-screen">
     <div class="auth-card">
       <div class="logo">OTPHub.</div>
-      <p class="auth-sub">Prices in your local currency</p>
+      <p class="auth-sub">50 Countries • Price in your local currency</p>
       <div class="tabs">
         <button type="button" id="tabLogin" class="tab active">Login</button>
         <button type="button" id="tabRegister" class="tab">Create Account</button>
@@ -44,10 +44,10 @@
       <section class="hero">
         <div id="localBadge" class="local-badge">📍 Detecting location...</div>
         <h1>Buy OTP for <span id="heroPrice">₦1,000</span></h1>
-        <p id="heroSub">Phone numbers from USA, UK, Canada - price in your currency</p>
+        <p id="heroSub">50 countries available - search USA, UK, Canada...</p>
       </section>
       <div class="search-box">
-        <input id="phoneSearch" type="text" placeholder="Search country: USA, UK, Canada..." />
+        <input id="phoneSearch" type="text" placeholder="Search 50 countries: USA, UK, Canada, Germany..." />
       </div>
       <div id="phoneCountryRow" class="country-row"></div>
       <section id="activeOrder" class="active-card hidden">
@@ -58,7 +58,7 @@
         <div id="otpBox" class="otp-box hidden"><div><div class="otp-label">OTP CODE</div><strong id="otpCode"></strong></div><span class="copy-pill">COPY</span></div>
         <div id="waitingText" class="waiting"><span class="dot"></span> Waiting for SMS...</div>
       </section>
-      <h2 id="servicesTitle"></h2>
+      <h2 id="servicesTitle">Services - 50 Countries</h2>
       <section id="services"></section>
     </main>
     <div id="topupModal" class="modal hidden">
