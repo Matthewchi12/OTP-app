@@ -1,11 +1,11 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OTPHub</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="toasts"></div>
@@ -31,15 +31,10 @@
       <div class="timer-bar"><div id="timerProgress"></div></div>
       <div id="phoneNumber" class="phone"></div>
       <div id="orderStatus" class="status"></div>
-
       <div id="otpBox" class="otp-box hidden">
-        <div>
-          <div class="otp-label">OTP CODE</div>
-          <strong id="otpCode"></strong>
-        </div>
+        <div><div class="otp-label">OTP CODE</div><strong id="otpCode"></strong></div>
         <span class="copy-pill">TAP TO COPY</span>
       </div>
-
       <div id="waitingText" class="waiting"><span class="dot"></span> Waiting for SMS... checking every 3s</div>
       <button id="cancelOrderBtn" class="cancel-btn">Cancel Number</button>
     </section>
@@ -58,6 +53,6 @@
     </div>
   </div>
 
-  <script src="index.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
