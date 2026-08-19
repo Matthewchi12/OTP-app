@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const API_URL = "https://otp-backend-amwc.onrender.com";
+  
   const LOCAL_CURRENCIES = [
     {code:"nigeria", name:"Nigeria", flag:"🇳🇬", currency:"NGN", symbol:"₦", price:1000, topups:[5000,10000,20000]},
     {code:"usa", name:"USA", flag:"🇺🇸", currency:"USD", symbol:"$", price:1, topups:[5,10,20]},
@@ -19,29 +21,23 @@ document.addEventListener("DOMContentLoaded", () => {
     {code:"saudiarabia", name:"Saudi Arabia", flag:"🇸🇦", prefix:"+966"}, {code:"egypt", name:"Egypt", flag:"🇪🇬", prefix:"+20"},
     {code:"morocco", name:"Morocco", flag:"🇲🇦", prefix:"+212"}, {code:"australia", name:"Australia", flag:"🇦🇺", prefix:"+61"},
     {code:"brazil", name:"Brazil", flag:"🇧🇷", prefix:"+55"}, {code:"mexico", name:"Mexico", flag:"🇲🇽", prefix:"+52"},
-    {code:"argentina", name:"Argentina", flag:"🇦🇷", prefix:"+54"}, {code:"colombia", name:"Colombia", flag:"🇨🇴", prefix:"+57"},
-    {code:"chile", name:"Chile", flag:"🇨🇱", prefix:"+56"}, {code:"peru", name:"Peru", flag:"🇵🇪", prefix:"+51"},
-    {code:"portugal", name:"Portugal", flag:"🇵🇹", prefix:"+351"}, {code:"belgium", name:"Belgium", flag:"🇧🇪", prefix:"+32"},
-    {code:"switzerland", name:"Switzerland", flag:"🇨🇭", prefix:"+41"}, {code:"ireland", name:"Ireland", flag:"🇮🇪", prefix:"+353"},
-    {code:"newzealand", name:"New Zealand", flag:"🇳🇿", prefix:"+64"}, {code:"indonesia", name:"Indonesia", flag:"🇮🇩", prefix:"+62"},
-    {code:"philippines", name:"Philippines", flag:"🇵🇭", prefix:"+63"}, {code:"malaysia", name:"Malaysia", flag:"🇲🇾", prefix:"+60"},
-    {code:"thailand", name:"Thailand", flag:"🇹🇭", prefix:"+66"}, {code:"vietnam", name:"Vietnam", flag:"🇻🇳", prefix:"+84"},
-    {code:"japan", name:"Japan", flag:"🇯🇵", prefix:"+81"}, {code:"southkorea", name:"South Korea", flag:"🇰🇷", prefix:"+82"},
-    {code:"russia", name:"Russia", flag:"🇷🇺", prefix:"+7"}, {code:"ukraine", name:"Ukraine", flag:"🇺🇦", prefix:"+380"},
-    {code:"cameroon", name:"Cameroon", flag:"🇨🇲", prefix:"+237"}, {code:"uganda", name:"Uganda", flag:"🇺🇬", prefix:"+256"},
-    {code:"tanzania", name:"Tanzania", flag:"🇹🇿", prefix:"+255"}, {code:"rwanda", name:"Rwanda", flag:"🇷🇼", prefix:"+250"},
-    {code:"ethiopia", name:"Ethiopia", flag:"🇪🇹", prefix:"+251"}, {code:"zambia", name:"Zambia", flag:"🇿🇲", prefix:"+260"},
-    {code:"pakistan", name:"Pakistan", flag:"🇵🇰", prefix:"+92"}, {code:"bangladesh", name:"Bangladesh", flag:"🇧🇩", prefix:"+880"},
   ];
   const SERVICES = [{id:"whatsapp",name:"WhatsApp",icon:"💬",color:"#25D366"},{id:"telegram",name:"Telegram",icon:"✈️",color:"#2AABEE"},{id:"facebook",name:"Facebook",icon:"📘",color:"#1877F2"},{id:"instagram",name:"Instagram",icon:"📸",color:"#E4405F"},{id:"tiktok",name:"TikTok",icon:"🎵",color:"#000"},{id:"google",name:"Google",icon:"🔍",color:"#DB4437"}];
   const $=id=>document.getElementById(id);
   const els={authScreen:$("authScreen"),app:$("app"),toasts:$("toasts"),tabLogin:$("tabLogin"),tabRegister:$("tabRegister"),loginForm:$("loginForm"),registerForm:$("registerForm"),phoneCountryRow:$("phoneCountryRow"),services:$("services"),activeOrder:$("activeOrder"),walletBalance:$("walletBalance"),heroPrice:$("heroPrice"),localBadge:$("localBadge"),servicesTitle:$("servicesTitle"),orderService:$("orderService"),timer:$("timer"),timerProgress:$("timerProgress"),phoneNumber:$("phoneNumber"),orderStatus:$("orderStatus"),otpBox:$("otpBox"),otpCode:$("otpCode"),waitingText:$("waitingText"),topupModal:$("topupModal"),modalCountry:$("modalCountry"),modalBalance:$("modalBalance"),topupOptions:$("topupOptions"),userEmail:$("userEmail"),phoneSearch:$("phoneSearch")};
-  let local=LOCAL_CURRENCIES[0], selected=PHONE_COUNTRIES[0], currentUser=null, state={balance:10000,active:null,search:""}, timerInt=null;
-  const toast=m=>{const d=document.createElement("div");d.className="toast";d.innerText=m;els.toasts.appendChild(d);setTimeout(()=>d.remove(),2500);};
+  let local=LOCAL_CURRENCIES[0], selected=PHONE_COUNTRIES[0], currentUser=null, state={balance:10000,active:null,search:""}, timerInt=null, pollInt=null;
+  const toast=m=>{const d=document.createElement("div");d.className="toast";d.innerText=m;els.toasts.appendChild(d);setTimeout(()=>d.remove(),3000);};
   const money=a=> local.currency==="NGN"?`${local.symbol}${Number(a).toLocaleString()}`:`${local.symbol}${a}`;
-  const getUsers=()=>JSON.parse(localStorage.getItem("otphub_users")||"[]");
-  const saveUsers=u=>localStorage.setItem("otphub_users",JSON.stringify(u));
-  function showApp(user){currentUser=user; localStorage.setItem("otphub_session",user.id); if(!user.balances){user.balances={}; LOCAL_CURRENCIES.forEach(c=>user.balances[c.code]=c.topups[1]);} state.balance=user.balances[local.code]; state.active=JSON.parse(localStorage.getItem(`otphub_active_${user.id}`)||"null"); els.authScreen.classList.add("hidden"); els.app.classList.remove("hidden"); els.userEmail.textContent=user.email; render(); startTimer();}
+  
+  function showApp(user, token){
+    currentUser=user; 
+    if(token) localStorage.setItem("otphub_token", token);
+    localStorage.setItem("otphub_user", JSON.stringify(user));
+    if(!user.balances){user.balances={}; LOCAL_CURRENCIES.forEach(c=>user.balances[c.code]=c.topups[1]);}
+    state.balance=user.balances[local.code] || 10000;
+    els.authScreen.classList.add("hidden"); els.app.classList.remove("hidden"); els.userEmail.textContent=user.email; render(); startTimer();
+  }
+
   function render(){
     els.walletBalance.textContent=money(state.balance); els.heroPrice.textContent=money(local.price); els.modalCountry.textContent=`${local.flag} ${local.currency}`; els.modalBalance.textContent=money(state.balance);
     els.servicesTitle.textContent=`${PHONE_COUNTRIES.length} Countries - ${money(local.price)} each • ${selected.flag} ${selected.name}`;
@@ -53,21 +49,86 @@ document.addEventListener("DOMContentLoaded", () => {
       d.innerHTML=`<div class="service-icon" style="background:${s.color}20">${s.icon}</div><div class="service-info"><div class="service-name">${s.name}</div><div class="service-meta">${selected.flag} ${selected.prefix}</div></div><div><div style="font-weight:800">${money(local.price)}</div><button data-id="${s.id}" class="buy-btn">Buy</button></div>`;
       els.services.appendChild(d);
     });
-    els.topupOptions.innerHTML=""; local.topups.forEach((a,i)=>{const o=document.createElement("div"); o.className="topup-option"+(i===1?" popular":""); o.innerHTML=`<b>Add ${money(a)}</b><span>${Math.floor(a/local.price)} OTPs</span>`; o.onclick=()=>{state.balance+=a; const us=getUsers(); const idx=us.findIndex(u=>u.id===currentUser.id); us[idx].balances[local.code]=state.balance; saveUsers(us); render(); els.topupModal.classList.add("hidden"); toast("Funded");}; els.topupOptions.appendChild(o);});
-    if(!state.active){els.activeOrder.classList.add("hidden");return;} els.activeOrder.classList.remove("hidden"); els.orderService.textContent=state.active.icon+" "+state.active.name; els.phoneNumber.textContent=state.active.phone; els.orderStatus.textContent=selected.name;
-    if(state.active.otp){els.otpBox.classList.remove("hidden"); els.waitingText.classList.add("hidden"); els.otpCode.textContent=state.active.otp;}else{els.otpBox.classList.add("hidden"); els.waitingText.classList.remove("hidden");}
+    els.topupOptions.innerHTML=""; local.topups.forEach((a,i)=>{const o=document.createElement("div"); o.className="topup-option"+(i===1?" popular":""); o.innerHTML=`<b>Add ${money(a)}</b><span>${Math.floor(a/local.price)} OTPs</span>`; o.onclick=()=>{state.balance+=a; render(); els.topupModal.classList.add("hidden"); toast("Funded (demo wallet)");}; els.topupOptions.appendChild(o);});
+    if(!state.active){els.activeOrder.classList.add("hidden");return;} els.activeOrder.classList.remove("hidden"); els.orderService.textContent=state.active.icon+" "+state.active.name; els.phoneNumber.textContent=state.active.phone; els.orderStatus.textContent=selected.name + " - REAL NUMBER";
+    if(state.active.otp){els.otpBox.classList.remove("hidden"); els.waitingText.classList.add("hidden"); els.otpCode.textContent=state.active.otp;}else{els.otpBox.classList.add("hidden"); els.waitingText.classList.remove("hidden"); els.waitingText.textContent="Waiting for REAL SMS from 5sim...";}
   }
-  function startTimer(){clearInterval(timerInt); timerInt=setInterval(()=>{if(state.active){const r=Math.max(0,Math.floor((state.active.expiresAt-Date.now())/1000)); els.timer.textContent=`${Math.floor(r/60)}:${String(r%60).padStart(2,"0")}`; els.timerProgress.style.width=`${(r/900)*100}%`; if(r<=0){state.active=null; render();}}},1000);}
+
+  function startTimer(){clearInterval(timerInt); timerInt=setInterval(()=>{if(state.active){const r=Math.max(0,Math.floor((state.active.expiresAt-Date.now())/1000)); els.timer.textContent=`${Math.floor(r/60)}:${String(r%60).padStart(2,"0")}`; els.timerProgress.style.width=`${(r/900)*100}%`; if(r<=0){state.active=null; clearInterval(pollInt); render();}}},1000);}
+  
+  function startPolling(orderId){
+    clearInterval(pollInt);
+    pollInt = setInterval(async ()=>{
+      try{
+        const token = localStorage.getItem("otphub_token");
+        const res = await fetch(`${API_URL}/api/orders/${orderId}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if(data.success && data.order && data.order.otp){
+          state.active.otp = data.order.otp;
+          render();
+          toast("REAL OTP Received: " + data.order.otp);
+          clearInterval(pollInt);
+        }
+      }catch(e){console.log("poll error", e)}
+    }, 5000);
+  }
+
   els.tabLogin.onclick=()=>{els.tabLogin.classList.add("active");els.tabRegister.classList.remove("active");els.loginForm.classList.remove("hidden");els.registerForm.classList.add("hidden");};
   els.tabRegister.onclick=()=>{els.tabRegister.classList.add("active");els.tabLogin.classList.remove("active");els.registerForm.classList.remove("hidden");els.loginForm.classList.add("hidden");};
-  els.registerForm.onsubmit=e=>{e.preventDefault(); const email=$("regEmail").value.trim().toLowerCase(), p=$("regPass").value, p2=$("regPass2").value; if(p!==p2) return toast("Passwords don't match"); if(p.length<6) return toast("Min 6 chars"); const users=getUsers(); if(users.find(u=>u.email===email)) return toast("Email exists"); const nu={id:Date.now().toString(),email,password:p,balances:{}}; LOCAL_CURRENCIES.forEach(c=>nu.balances[c.code]=c.topups[1]); users.push(nu); saveUsers(users); toast("Account created!"); showApp(nu);};
-  els.loginForm.onsubmit=e=>{e.preventDefault(); const email=$("loginEmail").value.trim().toLowerCase(), p=$("loginPass").value; const u=getUsers().find(x=>x.email===email && x.password===p); if(!u) return toast("Wrong email or password"); toast("Logged in!"); showApp(u);};
-  els.services.onclick=e=>{const b=e.target.closest(".buy-btn"); if(!b) return; if(state.balance<local.price){els.topupModal.classList.remove("hidden"); return toast("Low balance");} state.balance-=local.price; const phone=selected.prefix+" "+Math.floor(7000000000+Math.random()*999999999); state.active={id:Date.now().toString(),name:b.dataset.id,icon:"💬",phone,otp:null,expiresAt:Date.now()+900000}; const us=getUsers(); const i=us.findIndex(u=>u.id===currentUser.id); us[i].balances[local.code]=state.balance; saveUsers(us); localStorage.setItem(`otphub_active_${currentUser.id}`,JSON.stringify(state.active)); render(); startTimer(); setTimeout(()=>{state.active.otp=Math.floor(100000+Math.random()*900000).toString(); localStorage.setItem(`otphub_active_${currentUser.id}`,JSON.stringify(state.active)); render(); toast("OTP Received!");},4000);};
+  
+  els.registerForm.onsubmit=async e=>{
+    e.preventDefault(); const email=$("regEmail").value.trim().toLowerCase(), p=$("regPass").value, p2=$("regPass2").value; 
+    if(p!==p2) return toast("Passwords don't match"); 
+    try{
+      const res = await fetch(`${API_URL}/api/auth/register`, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({email, password:p})});
+      const data = await res.json();
+      if(!data.success) return toast(data.message || "Register failed");
+      toast("Account created!"); showApp(data.user, data.token);
+    }catch{toast("Backend not reachable - check Render link");}
+  };
+  
+  els.loginForm.onsubmit=async e=>{
+    e.preventDefault(); const email=$("loginEmail").value.trim().toLowerCase(), p=$("loginPass").value;
+    try{
+      const res = await fetch(`${API_URL}/api/auth/login`, {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({email, password:p})});
+      const data = await res.json();
+      if(!data.success) return toast(data.message || "Login failed");
+      toast("Logged in!"); showApp(data.user, data.token);
+    }catch{toast("Backend not reachable - check Render link");}
+  };
+  
+  els.services.onclick=async e=>{
+    const b=e.target.closest(".buy-btn"); if(!b) return; 
+    if(state.balance<local.price){els.topupModal.classList.remove("hidden"); return toast("Low balance");}
+    const serviceId = b.dataset.id;
+    b.textContent="Buying..."; b.disabled=true;
+    try{
+      const token = localStorage.getItem("otphub_token");
+      const res = await fetch(`${API_URL}/api/orders`, {
+        method:"POST",
+        headers:{"Content-Type":"application/json", "Authorization": `Bearer ${token}`},
+        body: JSON.stringify({country: selected.code, service: serviceId})
+      });
+      const data = await res.json();
+      if(!data.success) {b.textContent="Buy"; b.disabled=false; return toast(data.message || "Buy failed - check 5sim balance");}
+      state.balance-=local.price; 
+      state.active={id:data.order.id, name:serviceId, icon:"💬", phone:data.order.phone, otp:data.order.otp || null, expiresAt:Date.now()+900000};
+      render(); startTimer(); startPolling(data.order.id);
+      toast("REAL number bought: " + data.order.phone);
+    }catch(err){toast("Error buying - backend offline?"); b.textContent="Buy"; b.disabled=false;}
+  };
+
   $("walletBtn").onclick=()=>els.topupModal.classList.remove("hidden");
   $("depositBtn").onclick=()=>els.topupModal.classList.remove("hidden");
   $("closeModalBtn").onclick=()=>els.topupModal.classList.add("hidden");
-  $("logoutBtn").onclick=()=>{localStorage.removeItem("otphub_session"); location.reload();};
+  $("logoutBtn").onclick=()=>{localStorage.clear(); location.reload();};
   els.phoneSearch.oninput=e=>{state.search=e.target.value; render();};
   els.otpBox.onclick=()=>{if(state.active?.otp){navigator.clipboard.writeText(state.active.otp); toast("Copied "+state.active.otp);}};
-  const sess=localStorage.getItem("otphub_session"); if(sess){const u=getUsers().find(x=>x.id===sess); if(u) showApp(u);} render();
+  
+  const savedUser = localStorage.getItem("otphub_user");
+  const savedToken = localStorage.getItem("otphub_token");
+  if(savedUser && savedToken){try{showApp(JSON.parse(savedUser), savedToken);}catch{}} 
+  render();
 });
