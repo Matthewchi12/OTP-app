@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OTPHub</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <header class="header">
+    <div class="logo">OTPHub</div>
+
+    <button class="wallet" onclick="openTopup()">
+      <span id="walletBalance">₦10,000</span> • Top up
+    </button>
+  </header>
+
+  <main>
+
+    <section class="hero">
+      <h1>
+        Buy OTP for <span id="heroPrice">₦1,000</span>
+      </h1>
+
+      <p id="heroSub">
+        Currency auto based on country • 🇳🇬 Nigeria • NGN
+      </p>
+    </section>
+
+    <!-- Countries -->
+    <div class="country-row" id="countryRow"></div>
+
+    <!-- Active order -->
+    <section id="activeOrder" class="active-card hidden">
+
+      <div class="active-title">
+        <span id="orderService"></span>
+        <span id="timer">15:00</span>
+      </div>
+
+      <div id="phoneNumber" class="phone"></div>
+
+      <div id="orderStatus" class="status"></div>
+
+      <div id="otpBox" class="otp-box hidden" onclick="copyOTP()">
+        <strong id="otpCode"></strong>
+        <span>TAP TO COPY</span>
+      </div>
+
+      <div id="waitingText" class="waiting">
+        Waiting for SMS... checking every 3s
+      </div>
+
+    </section>
+
+    <!-- Services -->
+    <h2 id="servicesTitle">
+      All Services - ₦1,000 Each
+    </h2>
+
+    <section id="services"></section>
+
+  </main>
+
+  <!-- Top Up Modal -->
+  <div id="topupModal" class="modal hidden">
+
+    <div class="modal-content">
+
+      <h2>
+        Fund Wallet -
+        <span id="modalCountry">🇳🇬 NGN</span>
+      </h2>
+
+      <p class="current">
+        Current:
+        <strong id="modalBalance">₦10,000</strong>
+      </p>
+
+      <div id="topupOptions"></div>
+
+      <button class="close-btn" onclick="closeTopup()">
+        Close
+      </button>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
