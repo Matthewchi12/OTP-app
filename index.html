@@ -40,27 +40,30 @@
       <h2 id="servicesTitle">Services</h2>
       <section id="services"></section>
     </main>
-    <!-- UPDATED PAYSTACK MODAL -->
+    <!-- UPDATED PAYSTACK MODAL WITH CUSTOM AMOUNT -->
     <div id="topupModal" class="modal hidden">
       <div class="modal-content"><div class="handle"></div><h3>💳 Deposit with Paystack</h3><p class="current">Balance: <strong id="modalBalance">₦0</strong> • <span id="modalCountry"></span></p>
         <div style="margin:15px 0;">
-          <input id="payEmail" type="email" class="input" placeholder="Confirm your email" style="width:100%; margin-bottom:12px;" />
-          <p style="font-size:13px; opacity:0.7; margin-bottom:10px;">Choose amount to fund:</p>
-          <div id="topupOptions" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <button onclick="payNow(500)" class="auth-btn" style="padding:12px;">₦500</button>
-            <button onclick="payNow(1000)" class="auth-btn" style="padding:12px;">₦1,000</button>
-            <button onclick="payNow(2000)" class="auth-btn" style="padding:12px;">₦2,000</button>
-            <button onclick="payNow(5000)" class="auth-btn" style="padding:12px; background:#00C896;">₦5,000</button>
+          <input id="payEmail" type="email" class="input" placeholder="Confirm your email" style="width:100%; margin-bottom:10px;" />
+          
+          <label style="font-size:13px; font-weight:600;">Enter amount you want to pay (NGN) 👇</label>
+          <input id="customAmount" type="number" min="100" class="input" placeholder="e.g. 700, 1500, 10000" style="width:100%; margin:6px 0 10px 0; padding:14px; font-size:18px; border:2px solid #00C896; border-radius:8px;" />
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin-bottom:12px;">
+            <button onclick="setAmount(500)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦500</button>
+            <button onclick="setAmount(1000)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦1k</button>
+            <button onclick="setAmount(2000)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦2k</button>
+            <button onclick="setAmount(5000)" type="button" style="padding:10px; border:1px solid #ddd; border-radius:8px;">₦5k</button>
           </div>
+
+          <button onclick="payCustom()" class="auth-btn" style="width:100%; padding:16px; font-size:18px; background:#00C896; font-weight:bold;">💳 Pay Now</button>
           <p id="payStatus" style="margin-top:12px; font-size:13px; text-align:center;"></p>
         </div>
       <button id="closeModalBtn" class="close-btn">Close</button></div>
     </div>
   </div>
   <script src="index.js"></script>
-  <!-- PAYSTACK SCRIPT - ADDED -->
   <script>
-    // Auto-fill email when modal opens
     document.getElementById('depositBtn')?.addEventListener('click', () => {
       const loggedEmail = document.getElementById('userEmail')?.textContent || '';
       const payEmailInput = document.getElementById('payEmail');
@@ -68,17 +71,29 @@
         payEmailInput.value = loggedEmail.trim();
       }
     });
+    document.getElementById('walletBtn')?.addEventListener('click', () => {
+      const loggedEmail = document.getElementById('userEmail')?.textContent || '';
+      const payEmailInput = document.getElementById('payEmail');
+      if(payEmailInput && loggedEmail && loggedEmail.includes('@')){
+        payEmailInput.value = loggedEmail.trim();
+      }
+    });
+
+    function setAmount(val){
+      document.getElementById('customAmount').value = val;
+    }
+
+    function payCustom(){
+      const amt = document.getElementById('customAmount').value;
+      if(!amt || Number(amt) < 100) return alert("Enter amount minimum ₦100");
+      payNow(Number(amt));
+    }
 
     async function payNow(amount){
       const emailInput = document.getElementById('payEmail');
       const status = document.getElementById('payStatus');
       const email = emailInput.value.trim() || document.getElementById('userEmail')?.textContent?.trim();
-      
-      if(!email || !email.includes('@')){
-        alert("Please enter valid email");
-        return;
-      }
-      
+      if(!email || !email.includes('@')){ alert("Please enter valid email"); return; }
       status.textContent = "⏳ Redirecting to Paystack...";
       try{
         const res = await fetch('https://otp-backend-amwc.onrender.com/api/pay/initialize', {
@@ -91,7 +106,6 @@
           window.location.href = data.data.authorization_url;
         } else {
           status.textContent = "❌ Error: " + (data.message || JSON.stringify(data));
-          console.log(data);
         }
       } catch(e){
         status.textContent = "❌ Network error: " + e.message;
