@@ -34,12 +34,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if(token) localStorage.setItem("otphub_token", token);
     localStorage.setItem("otphub_user", JSON.stringify(user));
     if(!user.balances){user.balances={}; LOCAL_CURRENCIES.forEach(c=>user.balances[c.code]=c.topups[1]);}
-    state.balance=user.balances[local.code] || 10000;
+    state.balance=user.balances[local.code] || user.balances.nigeria || 10000;
     els.authScreen.classList.add("hidden"); els.app.classList.remove("hidden"); els.userEmail.textContent=user.email; render(); startTimer();
   }
 
   function render(){
-    els.walletBalance.textContent=money(state.balance); els.heroPrice.textContent=money(local.price); els.modalCountry.textContent=`${local.flag} ${local.currency}`; els.modalBalance.textContent=money(state.balance);
+    els.walletBalance.textContent=money(state.balance); els.heroPrice.textContent=money(local.price); if(els.modalCountry) els.modalCountry.textContent=`${local.flag} ${local.currency}`; if(els.modalBalance) els.modalBalance.textContent=money(state.balance);
     els.servicesTitle.textContent=`${PHONE_COUNTRIES.length} Countries - ${money(local.price)} each • ${selected.flag} ${selected.name}`;
     els.phoneCountryRow.innerHTML=""; PHONE_COUNTRIES.filter(c=>c.name.toLowerCase().includes(state.search.toLowerCase())||c.prefix.includes(state.search)).forEach(c=>{
       const b=document.createElement("button"); b.className="country-chip"+(c.code===selected.code?" active":""); b.textContent=`${c.flag} ${c.name} ${c.prefix}`; b.onclick=()=>{selected=c; render();}; els.phoneCountryRow.appendChild(b);
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       d.innerHTML=`<div class="service-icon" style="background:${s.color}20">${s.icon}</div><div class="service-info"><div class="service-name">${s.name}</div><div class="service-meta">${selected.flag} ${selected.prefix}</div></div><div><div style="font-weight:800">${money(local.price)}</div><button data-id="${s.id}" class="buy-btn">Buy</button></div>`;
       els.services.appendChild(d);
     });
-    els.topupOptions.innerHTML=""; local.topups.forEach((a,i)=>{const o=document.createElement("div"); o.className="topup-option"+(i===1?" popular":""); o.innerHTML=`<b>Add ${money(a)}</b><span>${Math.floor(a/local.price)} OTPs</span>`; o.onclick=()=>{state.balance+=a; render(); els.topupModal.classList.add("hidden"); toast("Funded (demo wallet)");}; els.topupOptions.appendChild(o);});
+    // REMOVED DEMO FUNDING - PAYSTACK HANDLES IT NOW
     if(!state.active){els.activeOrder.classList.add("hidden");return;} els.activeOrder.classList.remove("hidden"); els.orderService.textContent=state.active.icon+" "+state.active.name; els.phoneNumber.textContent=state.active.phone; els.orderStatus.textContent=selected.name + " - REAL NUMBER";
     if(state.active.otp){els.otpBox.classList.remove("hidden"); els.waitingText.classList.add("hidden"); els.otpCode.textContent=state.active.otp;}else{els.otpBox.classList.add("hidden"); els.waitingText.classList.remove("hidden"); els.waitingText.textContent="Waiting for REAL SMS from 5sim...";}
   }
@@ -73,6 +73,40 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }catch(e){console.log("poll error", e)}
     }, 5000);
+  }
+
+  // PAYSTACK FUNCTIONS - ADDED
+  window.setAmount = function(val){
+    const input = document.getElementById("customAmount");
+    if(input) input.value = val;
+  }
+  window.payCustom = function(){
+    const input = document.getElementById("customAmount");
+    const amount = input ? input.value : null;
+    if(!amount || Number(amount) < 100) return toast("Enter amount minimum ₦100");
+    payNow(Number(amount));
+  }
+  window.payNow = async function(amount){
+    const emailInput = document.getElementById("payEmail");
+    const status = document.getElementById("payStatus");
+    const email = (emailInput && emailInput.value.trim()) || (els.userEmail ? els.userEmail.textContent.trim() : "") || (currentUser ? currentUser.email : "");
+    if(!email || !email.includes('@')){ toast("Enter valid email"); return; }
+    if(status) status.textContent = "⏳ Redirecting to Paystack...";
+    try{
+      const res = await fetch(`${API_URL}/api/pay/initialize`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ email, amount: Number(amount) })
+      });
+      const data = await res.json();
+      if(data.status && data.data && data.data.authorization_url){
+        window.location.href = data.data.authorization_url;
+      } else {
+        if(status) status.textContent = "❌ " + (data.message || JSON.stringify(data));
+        toast("Payment error");
+      }
+    }catch(e){
+      if(status) status.textContent = "❌ Network error: " + e.message;
+    }
   }
 
   els.tabLogin.onclick=()=>{els.tabLogin.classList.add("active");els.tabRegister.classList.remove("active");els.loginForm.classList.remove("hidden");els.registerForm.classList.add("hidden");};
@@ -114,14 +148,22 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
       if(!data.success) {b.textContent="Buy"; b.disabled=false; return toast(data.message || "Buy failed - check 5sim balance");}
       state.balance-=local.price; 
+      if(data.balances) { currentUser.balances = data.balances; localStorage.setItem("otphub_user", JSON.stringify(currentUser)); state.balance = data.balances[local.code] || state.balance; }
       state.active={id:data.order.id, name:serviceId, icon:"💬", phone:data.order.phone, otp:data.order.otp || null, expiresAt:Date.now()+900000};
       render(); startTimer(); startPolling(data.order.id);
       toast("REAL number bought: " + data.order.phone);
     }catch(err){toast("Error buying - backend offline?"); b.textContent="Buy"; b.disabled=false;}
   };
 
-  $("walletBtn").onclick=()=>els.topupModal.classList.remove("hidden");
-  $("depositBtn").onclick=()=>els.topupModal.classList.remove("hidden");
+  function openDeposit(){
+    els.topupModal.classList.remove("hidden");
+    const loggedEmail = els.userEmail ? els.userEmail.textContent : (currentUser ? currentUser.email : "");
+    const payEmailInput = document.getElementById("payEmail");
+    if(payEmailInput && loggedEmail && loggedEmail.includes('@')) payEmailInput.value = loggedEmail.trim();
+  }
+
+  $("walletBtn").onclick=openDeposit;
+  $("depositBtn").onclick=openDeposit;
   $("closeModalBtn").onclick=()=>els.topupModal.classList.add("hidden");
   $("logoutBtn").onclick=()=>{localStorage.clear(); location.reload();};
   els.phoneSearch.oninput=e=>{state.search=e.target.value; render();};
