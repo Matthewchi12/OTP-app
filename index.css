@@ -32,3 +32,6 @@ h2{padding:18px 16px 12px;font-size:14px;color:#999}.service-card{display:flex;a
 .handle{width:36px;height:5px;background:#ddd;border-radius:999px;margin:0 auto 16px}.current{color:#666;font-size:13px;margin:8px 0 14px}
 .topup-option{background:#111;color:#fff;padding:16px;border-radius:14px;margin-top:10px;display:flex;justify-content:space-between;cursor:pointer}.topup-option.popular{background:var(--lime);color:#000}
 .close-btn{width:100%;margin-top:14px;padding:13px;border-radius:12px;border:0;background:#eee;font-weight:700;cursor:pointer}.hidden{display:none!important}
+.deposit-bar{margin-top:14px}
+.deposit-btn{width:100%;background:var(--lime);color:#000;border:0;padding:15px 18px;border-radius:14px;font-weight:900;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(163,255,18,.25)}
+.deposit-btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
