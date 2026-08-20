@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -71,19 +71,19 @@ let selectedCountry = "Nigeria";
 let currentBalance = 0;
 function getToken(){ return localStorage.getItem("otphub_backend_token"); }
 function updateWallet(balance){ currentBalance = Number(balance)||0; document.getElementById("walletBtn").textContent = "₦" + currentBalance.toLocaleString("en-NG"); }
-const servicesList=[
-  {name:"WhatsApp",id:"whatsapp",price:"₦1,000",logo:"https://cdn.simpleicons.org/whatsapp/25D366"},
-  {name:"Telegram",id:"telegram",price:"₦800",logo:"https://cdn.simpleicons.org/telegram/26A5E4"},
-  {name:"Facebook",id:"facebook",price:"₦700",logo:"https://cdn.simpleicons.org/facebook/1877F2"},
-  {name:"Google",id:"google",price:"₦900",logo:"https://cdn.simpleicons.org/google/EA4335"},
-  {name:"Instagram",id:"instagram",price:"₦800",logo:"https://cdn.simpleicons.org/instagram/E4405F"},
+ const servicesList=[
+  {name:"WhatsApp",id:"whatsapp",price:"₦1,000",logo:"https://cdn.simpleicons.org/whatsapp/ffffff"},
+  {name:"Telegram",id:"telegram",price:"₦800",logo:"https://cdn.simpleicons.org/telegram/ffffff"},
+  {name:"Facebook",id:"facebook",price:"₦700",logo:"https://cdn.simpleicons.org/facebook/ffffff"},
+  {name:"Google",id:"google",price:"₦900",logo:"https://cdn.simpleicons.org/google/ffffff"},
+  {name:"Instagram",id:"instagram",price:"₦800",logo:"https://cdn.simpleicons.org/instagram/ffffff"},
   {name:"Twitter",id:"twitter",price:"₦700",logo:"https://cdn.simpleicons.org/x/ffffff"},
-  {name:"Discord",id:"discord",price:"₦600",logo:"https://cdn.simpleicons.org/discord/5865F2"},
+  {name:"Discord",id:"discord",price:"₦600",logo:"https://cdn.simpleicons.org/discord/ffffff"},
   {name:"TikTok",id:"tiktok",price:"₦700",logo:"https://cdn.simpleicons.org/tiktok/ffffff"},
   {name:"Apple",id:"apple",price:"₦1,200",logo:"https://cdn.simpleicons.org/apple/ffffff"},
   {name:"Microsoft",id:"microsoft",price:"₦900",logo:"https://cdn.simpleicons.org/microsoft/ffffff"},
   {name:"Uber",id:"uber",price:"₦800",logo:"https://cdn.simpleicons.org/uber/ffffff"},
-  {name:"Amazon",id:"amazon",price:"₦900",logo:"https://cdn.simpleicons.org/amazon/ffffff"},
+  {name:"Amazon",id:"amazon",price:"₦900",logo:"https://cdn.simpleicons.org/amazon/ffffff"}
 ];
 window.availableStock = null;
 async function loadAvailability(){
@@ -102,13 +102,24 @@ function renderCountries(filter=""){
   row.innerHTML = countries.filter(c=>c.toLowerCase().includes(filter.toLowerCase())).map(c=>`<div class="country-chip ${c===selectedCountry?"active":""}" onclick="selectCountry('${c}')">${c}</div>`).join("");
 }
 window.selectCountry=function(c){ selectedCountry=c; renderCountries(); loadAvailability(); };
-function renderServices(filter=""){
+ function renderServices(filter=""){
   const el=document.getElementById("services");
   el.innerHTML = servicesList.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase())).map(s=>{
     const stock = window.availableStock? window.availableStock[s.id] : null;
     const isAvailable = stock===null? true : stock>0;
     if(!isAvailable) return ``;
-    return `<div class="service-card" onclick="buyService('${s.id}','${s.name}')"><div class="service-left"><div class="service-logo"><img src="${s.logo}" alt="${s.name}"/></div><div><div class="service-name">${s.name}</div><div class="service-meta">${selectedCountry} • ${s.price} ${stock!==null?`• ${stock} left`:''}</div></div></div><button class="buy-btn">BUY</button></div>`;
+    return `<div class="service-card" onclick="buyService('${s.id}','${s.name}')">
+      <div class="service-left">
+        <div class="service-logo">
+          <img src="${s.logo}" alt="${s.name}" onerror="this.outerHTML='<span style=color:#fff;font-weight:900>${s.name[0]}</span>'"/>
+        </div>
+        <div>
+          <div class="service-name">${s.name}</div>
+          <div class="service-meta">${selectedCountry} • ${s.price} ${stock!==null?`• ${stock} left`:''}</div>
+        </div>
+      </div>
+      <button class="buy-btn">BUY</button>
+    </div>`;
   }).join("");
   if(!el.innerHTML.trim()){ el.innerHTML=`<div style="padding:20px;text-align:center;color:#888">No numbers available for ${selectedCountry}. Try another country.</div>`; }
 }
