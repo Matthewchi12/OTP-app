@@ -13,7 +13,7 @@ body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif}
 .auth-card{background:#111;border:1px solid #222;padding:24px;border-radius:16px;width:100%;max-width:380px}
 .input{width:100%;padding:12px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333;outline:none}
 .tab{flex:1;padding:10px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
-.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;padding-bottom:110px}
+.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px;padding-bottom:20px}
 .service-card{background:#151515;border:1px solid #252525;border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .service-left{display:flex;align-items:center;gap:10px;min-width:0}
 .service-logo{width:42px;height:42px;flex-shrink:0;border-radius:10px;background:#000;display:flex;align-items:center;justify-content:center;border:1px solid #222;overflow:hidden}
@@ -28,10 +28,11 @@ body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif}
 .search-box{padding:0 12px;margin:10px 0}
 .search-box input{width:100%;padding:14px 16px;border-radius:12px;background:#151515;border:1px solid #252525;color:#fff;outline:none}
 .active-card{margin:12px;background:#151515;border:1px solid #252525;border-radius:14px;padding:14px}
-@media(max-width:480px){.services-grid{grid-template-columns:1fr 1fr;gap:8px;padding:8px;padding-bottom:110px}.service-card{padding:10px}.service-logo{width:36px;height:36px}.service-logo img{width:23px;height:23px}.service-name{font-size:12px}.buy-btn{padding:6px 10px;font-size:10px}}
-#topupModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:end;justify-content:center}
-main{padding-bottom:110px}
-.support-box{position:fixed;right:16px;bottom:16px;z-index:9999;background:#151515;border:1px solid #333;padding:14px 16px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.7);min-width:220px}
+@media(max-width:480px){.services-grid{grid-template-columns:1fr 1fr;gap:8px;padding:8px;padding-bottom:20px}.service-card{padding:10px}.service-logo{width:36px;height:36px}.service-logo img{width:23px;height:23px}.service-name{font-size:12px}.buy-btn{padding:6px 10px;font-size:10px}}
+#topupModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;align-items:end;justify-content:center}
+main{padding-bottom:20px}
+/* FIXED - NOT FLOATING ANYMORE */
+.support-box{position:static;margin:32px 12px calc(24px + env(safe-area-inset-bottom));background:#151515;border:1px solid #222;padding:16px;border-radius:14px;width:auto;box-shadow:none;z-index:1}
 .support-title{font-size:11px;color:#00C896;font-weight:900;letter-spacing:.6px;margin-bottom:8px}
 .support-item{font-size:13px;color:#fff;margin:6px 0;display:flex;gap:8px;align-items:center}
 .support-phone{color:#ffffff!important;font-weight:900!important;font-size:14px!important;text-decoration:none!important;-webkit-text-fill-color:#ffffff!important}
@@ -61,6 +62,7 @@ main{padding-bottom:110px}
 <h2 style="padding:12px 12px 0;font-size:12px;color:#666">POPULAR SERVICES</h2>
 <section id="services" class="services-grid"></section>
 </main>
+<div class="support-box"><div class="support-title">24/7 CUSTOMER SUPPORT</div><div class="support-item">📞 <a href="tel:+2348035771657" class="support-phone">+2348035771657</a></div><div class="support-item">✉️ <a href="mailto:matthewchi1221@gmail.com" class="support-email">matthewchi1221@gmail.com</a></div></div>
 <div id="topupModal" class="hidden" style="display:none"><div style="background:#111;border:1px solid #222;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px"><h3 style="margin:0 0 12px">💳 Fund Wallet</h3><input id="payEmail" type="email" placeholder="Email" style="width:100%;padding:12px;margin:8px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/><input id="customAmount" type="number" placeholder="Amount e.g 1000" style="width:100%;padding:14px;border:2px solid #00C896;border-radius:10px;background:#000;color:#fff"/><div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0"><button onclick="document.getElementById('customAmount').value=500" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦500</button><button onclick="document.getElementById('customAmount').value=1000" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦1k</button><button onclick="document.getElementById('customAmount').value=2000" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦2k</button><button onclick="document.getElementById('customAmount').value=5000" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦5k</button></div><button id="payBtn" style="width:100%;padding:16px;background:#00C896;color:#000;font-weight:900;border:none;border-radius:12px">Pay with Paystack</button><p id="payStatus" style="text-align:center;margin-top:10px;font-size:12px"></p><button id="closeModalBtn" style="width:100%;padding:12px;background:#222;color:#fff;border:none;border-radius:10px;margin-top:10px">Close</button></div></div>
 </div>
 <script>
@@ -84,7 +86,6 @@ const servicesList=[
   {name:"Uber",id:"uber",price:"₦800",logo:"https://cdn.simpleicons.org/uber/000000"},
   {name:"Amazon",id:"amazon",price:"₦900",logo:"https://cdn.simpleicons.org/amazon/FF9900"}
 ];
-// NEW STOCK LOGIC
 window.availableStock = null;
 async function loadAvailability(){
   const token=getToken(); if(!token) return;
@@ -142,6 +143,5 @@ document.getElementById("logoutBtn").onclick=async()=>{ await signOut(auth); };
 async function loadBalance(){ const token=localStorage.getItem("otphub_backend_token"); if(!token) return; try{ const res=await fetch("https://otp-backend-amwc.onrender.com/api/user/balance",{headers:{Authorization:"Bearer "+token}}); const data=await res.json(); if(data.success) updateWallet(data.balances?.nigeria||0); }catch(e){} }
 function updateWallet(b){ const el=document.getElementById("walletBtn"); if(el) el.textContent="₦"+(Number(b)||0).toLocaleString("en-NG"); }
 </script>
-<div class="support-box"><div class="support-title">24/7 CUSTOMER SUPPORT</div><div class="support-item">📞 <span class="support-phone">+2348035771657</span></div><div class="support-item">✉️ <span class="support-email">matthewchi1221@gmail.com</span></div></div>
 </body>
 </html>
