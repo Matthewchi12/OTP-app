@@ -4,2319 +4,300 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>OTPHub</title>
-
 <style>
 *{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:#0a0a0a;
-  color:#fff;
-  font-family:system-ui,sans-serif;
-}
-
-.hidden{
-  display:none !important;
-}
-
-.auth-screen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:#000;
-  padding:20px;
-}
-
-.auth-card{
-  background:#111;
-  border:1px solid #222;
-  padding:24px;
-  border-radius:16px;
-  width:100%;
-  max-width:380px;
-}
-
-.input{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  border-radius:10px;
-  background:#000;
-  color:#fff;
-  border:1px solid #333;
-  outline:none;
-}
-
-.tab{
-  flex:1;
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.services-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  padding:12px;
-}
-
-.service-card{
-  background:#151515;
-  border:1px solid #252525;
-  border-radius:14px;
-  padding:14px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  cursor:pointer;
-}
-
-.service-left{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-}
-
-.service-logo{
-  width:42px;
-  height:42px;
-  flex-shrink:0;
-  border-radius:10px;
-  background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid #222;
-  overflow:hidden;
-}
-
-.service-logo img{
-  width:26px;
-  height:26px;
-  object-fit:contain;
-}
-
-.service-name{
-  font-weight:700;
-  font-size:13px;
-}
-
-.service-meta{
-  font-size:11px;
-  color:#888;
-  margin-top:2px;
-}
-
-.buy-btn{
-  background:#00C896;
-  color:#000;
-  border:none;
-  padding:7px 14px;
-  border-radius:20px;
-  font-weight:800;
-  font-size:11px;
-  cursor:pointer;
-  flex-shrink:0;
-}
-
-.country-row{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding:12px;
-  scrollbar-width:none;
-}
-
-.country-row::-webkit-scrollbar{
-  display:none;
-}
-
-.country-chip{
-  white-space:nowrap;
-  background:#151515;
-  border:1px solid #252525;
-  padding:7px 14px;
-  border-radius:20px;
-  font-size:12px;
-  cursor:pointer;
-}
-
-.country-chip.active{
-  background:#00C896;
-  color:#000;
-  font-weight:700;
-}
-
-.search-box{
-  padding:0 12px;
-  margin:10px 0;
-}
-
-.search-box input{
-  width:100%;
-  padding:14px 16px;
-  border-radius:12px;
-  background:#151515;
-  border:1px solid #252525;
-  color:#fff;
-  outline:none;
-}
-
-.active-card{
-  margin:12px;
-  background:#151515;
-  border:1px solid #252525;
-  border-radius:14px;
-  padding:14px;
-}
-
-@media(max-width:480px){
-
-  .services-grid{
-    grid-template-columns:1fr 1fr;
-    gap:8px;
-    padding:8px;
-  }
-
-  .service-card{
-    padding:10px;
-  }
-
-  .service-logo{
-    width:36px;
-    height:36px;
-  }
-
-  .service-logo img{
-    width:23px;
-    height:23px;
-  }
-
-  .service-name{
-    font-size:12px;
-  }
-
-  .buy-btn{
-    padding:6px 10px;
-    font-size:10px;
-  }
-}
+body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif}
+.hidden{display:none!important}
+.auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;padding:20px}
+.auth-card{background:#111;border:1px solid #222;padding:24px;border-radius:16px;width:100%;max-width:380px}
+.input{width:100%;padding:12px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333;outline:none}
+.tab{flex:1;padding:10px;border-radius:10px;border:none;font-weight:700;cursor:pointer}
+.services-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:12px}
+.service-card{background:#151515;border:1px solid #252525;border-radius:14px;padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.service-left{display:flex;align-items:center;gap:10px;min-width:0}
+.service-logo{width:42px;height:42px;flex-shrink:0;border-radius:10px;background:#000;display:flex;align-items:center;justify-content:center;border:1px solid #222;overflow:hidden}
+.service-logo img{width:26px;height:26px;object-fit:contain}
+.service-name{font-weight:700;font-size:13px}
+.service-meta{font-size:11px;color:#888;margin-top:2px}
+.buy-btn{background:#00C896;color:#000;border:none;padding:7px 14px;border-radius:20px;font-weight:800;font-size:11px;cursor:pointer}
+.country-row{display:flex;gap:8px;overflow-x:auto;padding:12px;scrollbar-width:none}
+.country-row::-webkit-scrollbar{display:none}
+.country-chip{white-space:nowrap;background:#151515;border:1px solid #252525;padding:7px 14px;border-radius:20px;font-size:12px;cursor:pointer}
+.country-chip.active{background:#00C896;color:#000;font-weight:700}
+.search-box{padding:0 12px;margin:10px 0}
+.search-box input{width:100%;padding:14px 16px;border-radius:12px;background:#151515;border:1px solid #252525;color:#fff;outline:none}
+.active-card{margin:12px;background:#151515;border:1px solid #252525;border-radius:14px;padding:14px}
+@media(max-width:480px){.services-grid{grid-template-columns:1fr 1fr;gap:8px;padding:8px}.service-card{padding:10px}.service-logo{width:36px;height:36px}.service-logo img{width:23px;height:23px}.service-name{font-size:12px}.buy-btn{padding:6px 10px;font-size:10px}}
+#topupModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:end;justify-content:center}
 </style>
 </head>
-
 <body>
 
-
-<!-- ================= AUTH ================= -->
-
 <div id="authScreen" class="auth-screen">
-
   <div class="auth-card">
-
-    <div style="color:#00C896;font-weight:900;font-size:28px">
-      OTPHub.
-    </div>
-
-    <p style="color:#888;margin:8px 0 20px;font-size:13px">
-      50 Countries • Instant OTP
-    </p>
-
+    <div style="color:#00C896;font-weight:900;font-size:28px">OTPHub.</div>
+    <p style="color:#888;margin:8px 0 20px;font-size:13px">50 Countries • Instant OTP</p>
     <div style="display:flex;gap:8px;margin-bottom:16px">
-
-      <button
-        id="tabLogin"
-        class="tab"
-        style="background:#00C896;color:#000">
-        Login
-      </button>
-
-      <button
-        id="tabRegister"
-        class="tab"
-        style="background:#222;color:#fff">
-        Create Account
-      </button>
-
+      <button id="tabLogin" class="tab" style="background:#00C896;color:#000">Login</button>
+      <button id="tabRegister" class="tab" style="background:#222;color:#fff">Create Account</button>
     </div>
-
-
-    <!-- LOGIN -->
-
     <form id="loginForm">
-
-      <input
-        id="loginEmail"
-        type="email"
-        class="input"
-        placeholder="Email"
-        required/>
-
-      <input
-        id="loginPass"
-        type="password"
-        class="input"
-        placeholder="Password"
-        required/>
-
-      <button
-        type="submit"
-        style="width:100%;padding:14px;background:#00C896;color:#000;border:none;border-radius:10px;font-weight:900;margin-top:8px">
-
-        Login
-
-      </button>
-
-      <p style="text-align:center;margin-top:12px">
-
-        <button
-          type="button"
-          id="forgotBtn"
-          style="background:none;border:none;color:#00C896;font-size:13px;cursor:pointer;text-decoration:underline">
-
-          Forgot Password?
-
-        </button>
-
-      </p>
-
+      <input id="loginEmail" type="email" class="input" placeholder="Email" required/>
+      <input id="loginPass" type="password" class="input" placeholder="Password" required/>
+      <button type="submit" style="width:100%;padding:14px;background:#00C896;color:#000;border:none;border-radius:10px;font-weight:900;margin-top:8px">Login</button>
+      <p style="text-align:center;margin-top:12px"><button type="button" id="forgotBtn" style="background:none;border:none;color:#00C896;font-size:13px;cursor:pointer;text-decoration:underline">Forgot Password?</button></p>
     </form>
-
-
-    <!-- REGISTER -->
-
-    <form
-      id="registerForm"
-      class="hidden">
-
-      <input
-        id="regEmail"
-        type="email"
-        class="input"
-        placeholder="Email"
-        required/>
-
-      <input
-        id="regPass"
-        type="password"
-        class="input"
-        placeholder="Password min 6"
-        required/>
-
-      <input
-        id="regPass2"
-        type="password"
-        class="input"
-        placeholder="Confirm"
-        required/>
-
-      <button
-        type="submit"
-        style="width:100%;padding:14px;background:#00C896;color:#000;border:none;border-radius:10px;font-weight:900;margin-top:8px">
-
-        Create Account
-
-      </button>
-
+    <form id="registerForm" class="hidden">
+      <input id="regEmail" type="email" class="input" placeholder="Email" required/>
+      <input id="regPass" type="password" class="input" placeholder="Password min 6" required/>
+      <input id="regPass2" type="password" class="input" placeholder="Confirm" required/>
+      <button type="submit" style="width:100%;padding:14px;background:#00C896;color:#000;border:none;border-radius:10px;font-weight:900;margin-top:8px">Create Account</button>
     </form>
-
   </div>
-
 </div>
-
-
-
-<!-- ================= APP ================= -->
 
 <div id="app" class="hidden">
-
-
-<header
-style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #222">
-
-  <div
-    style="color:#00C896;font-weight:900;font-size:22px">
-
-    OTPHub.
-
+<header style="display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #222">
+  <div style="color:#00C896;font-weight:900;font-size:22px">OTPHub.</div>
+  <div style="display:flex;gap:8px;align-items:center;min-width:0">
+    <span id="userEmail" style="font-size:11px;color:#888;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+    <button id="walletBtn" style="background:#00C896;color:#000;border:none;padding:8px 14px;border-radius:20px;font-weight:800">₦0</button>
+    <button id="logoutBtn" style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:20px;font-size:12px">Logout</button>
   </div>
-
-
-  <div
-    style="display:flex;gap:8px;align-items:center;min-width:0">
-
-    <span
-      id="userEmail"
-      style="font-size:11px;color:#888;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
-    </span>
-
-
-    <button
-      id="walletBtn"
-      style="background:#00C896;color:#000;border:none;padding:8px 14px;border-radius:20px;font-weight:800">
-
-      ₦0
-
-    </button>
-
-
-    <button
-      id="logoutBtn"
-      style="background:#222;color:#fff;border:none;padding:8px 12px;border-radius:20px;font-size:12px">
-
-      Logout
-
-    </button>
-
-  </div>
-
 </header>
-
-
-
 <main>
-
-
-<!-- ================= HOME ================= -->
-
 <section style="padding:20px 12px">
-
-  <div
-    style="background:#151515;border:1px solid #222;padding:6px 12px;border-radius:20px;display:inline-block;font-size:11px;margin-bottom:12px">
-
-    📍 Nigeria • ₦1,000 per OTP
-
-  </div>
-
-
-  <h1 style="font-size:28px;margin:0">
-
-    Buy OTP for
-    <span style="color:#00C896">
-      ₦1,000
-    </span>
-
-  </h1>
-
-
-  <p
-    style="color:#888;font-size:13px;margin-top:6px">
-
-    50 countries • WhatsApp, Telegram & more
-
-  </p>
-
-
-  <button
-    id="depositBtn"
-    style="width:100%;padding:16px;background:#00C896;color:#000;border:none;border-radius:12px;font-weight:900;font-size:15px;margin-top:14px">
-
-    💳 Deposit / Fund Wallet
-
-  </button>
-
+  <div style="background:#151515;border:1px solid #222;padding:6px 12px;border-radius:20px;display:inline-block;font-size:11px;margin-bottom:12px">📍 Nigeria • ₦1,000 per OTP</div>
+  <h1 style="font-size:28px;margin:0">Buy OTP for <span style="color:#00C896">₦1,000</span></h1>
+  <p style="color:#888;font-size:13px;margin-top:6px">50 countries • WhatsApp, Telegram & more</p>
+  <button id="depositBtn" style="width:100%;padding:16px;background:#00C896;color:#000;border:none;border-radius:12px;font-weight:900;font-size:15px;margin-top:14px">💳 Deposit / Fund Wallet</button>
 </section>
-
-
-
-<!-- ================= SEARCH ================= -->
-
-<div class="search-box">
-
-  <input
-    id="phoneSearch"
-    type="text"
-    placeholder="Search: USA, WhatsApp..."/>
-
-</div>
-
-
-
-<!-- ================= COUNTRIES ================= -->
-
-<div
-  id="phoneCountryRow"
-  class="country-row">
-</div>
-
-
-
-<!-- ================= ACTIVE ORDER ================= -->
-
-<section
-  id="activeOrder"
-  class="active-card hidden"
-  style="display:none">
-
-  <div
-    id="orderService"
-    style="font-weight:700">
+<div class="search-box"><input id="phoneSearch" type="text" placeholder="Search: USA, WhatsApp..."/></div>
+<div id="phoneCountryRow" class="country-row"></div>
+<section id="activeOrder" class="active-card hidden" style="display:none">
+  <div id="orderService" style="font-weight:700"></div>
+  <div id="phoneNumber" style="font-size:15px;margin:12px 0;color:#fff"></div>
+  <div id="otpBox" class="hidden" style="display:none;margin-top:12px;background:#000;border:1px solid #00C896;padding:12px;border-radius:10px">
+    <div><div style="font-size:10px;color:#888">OTP CODE</div><strong id="otpCode" style="font-size:22px"></strong></div>
+    <span id="copyBtn" style="display:inline-block;margin-top:10px;background:#00C896;color:#000;padding:8px 16px;border-radius:20px;font-weight:800;font-size:12px;cursor:pointer">COPY</span>
   </div>
-
-
-  <div
-    id="phoneNumber"
-    style="font-size:15px;margin:12px 0;color:#fff">
-  </div>
-
-
-  <div
-    id="otpBox"
-    class="hidden"
-    style="display:none;margin-top:12px;background:#000;border:1px solid #00C896;padding:12px;border-radius:10px">
-
-    <div>
-
-      <div
-        style="font-size:10px;color:#888">
-
-        OTP CODE
-
-      </div>
-
-      <strong
-        id="otpCode"
-        style="font-size:22px">
-      </strong>
-
-    </div>
-
-
-    <span
-      id="copyBtn"
-      style="display:inline-block;margin-top:10px;background:#00C896;color:#000;padding:8px 16px;border-radius:20px;font-weight:800;font-size:12px;cursor:pointer">
-
-      COPY
-
-    </span>
-
-  </div>
-
 </section>
-
-
-
-<!-- ================= SERVICES ================= -->
-
-<h2
-style="padding:12px 12px 0;font-size:12px;color:#666">
-
-  POPULAR SERVICES
-
-</h2>
-
-
-<section
-id="services"
-class="services-grid">
-</section>
-
-
+<h2 style="padding:12px 12px 0;font-size:12px;color:#666">POPULAR SERVICES</h2>
+<section id="services" class="services-grid"></section>
 </main>
 
-
-
-<!-- ================= TOPUP MODAL ================= -->
-
-<div
-id="topupModal"
-class="hidden"
-style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:end;justify-content:center">
-
-  <div
-    style="background:#111;border:1px solid #222;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px">
-
-    <h3 style="margin:0 0 12px">
-      💳 Fund Wallet
-    </h3>
-
-
-    <input
-      id="payEmail"
-      type="email"
-      placeholder="Email"
-      style="width:100%;padding:12px;margin:8px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/>
-
-
-    <input
-      id="customAmount"
-      type="number"
-      placeholder="Amount e.g 1000"
-      style="width:100%;padding:14px;border:2px solid #00C896;border-radius:10px;background:#000;color:#fff"/>
-
-
-    <div
-      style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0">
-
-      <button
-        onclick="document.getElementById('customAmount').value=500"
-        style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">
-        ₦500
-      </button>
-
-      <button
-        onclick="document.getElementById('customAmount').value=1000"
-        style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">
-        ₦1k
-      </button>
-
-      <button
-        onclick="document.getElementById('customAmount').value=2000"
-        style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">
-        ₦2k
-      </button>
-
-      <button
-        onclick="document.getElementById('customAmount').value=5000"
-        style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">
-        ₦5k
-      </button>
-
+<div id="topupModal" class="hidden" style="display:none">
+  <div style="background:#111;border:1px solid #222;border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:500px">
+    <h3 style="margin:0 0 12px">💳 Fund Wallet</h3>
+    <input id="payEmail" type="email" placeholder="Email" style="width:100%;padding:12px;margin:8px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333"/>
+    <input id="customAmount" type="number" placeholder="Amount e.g 1000" style="width:100%;padding:14px;border:2px solid #00C896;border-radius:10px;background:#000;color:#fff"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 0">
+      <button onclick="document.getElementById('customAmount').value=500" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦500</button>
+      <button onclick="document.getElementById('customAmount').value=1000" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦1k</button>
+      <button onclick="document.getElementById('customAmount').value=2000" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦2k</button>
+      <button onclick="document.getElementById('customAmount').value=5000" style="padding:10px;background:#1a1a1a;color:#fff;border-radius:10px;border:1px solid #333">₦5k</button>
     </div>
-
-
-    <button
-      id="payBtn"
-      style="width:100%;padding:16px;background:#00C896;color:#000;font-weight:900;border:none;border-radius:12px">
-
-      Pay with Paystack
-
-    </button>
-
-
-    <p
-      id="payStatus"
-      style="text-align:center;margin-top:10px;font-size:12px">
-    </p>
-
-
-    <button
-      id="closeModalBtn"
-      style="width:100%;padding:12px;background:#222;color:#fff;border:none;border-radius:10px;margin-top:10px">
-
-      Close
-
-    </button>
-
+    <button id="payBtn" style="width:100%;padding:16px;background:#00C896;color:#000;font-weight:900;border:none;border-radius:12px">Pay with Paystack</button>
+    <p id="payStatus" style="text-align:center;margin-top:10px;font-size:12px"></p>
+    <button id="closeModalBtn" style="width:100%;padding:12px;background:#222;color:#fff;border:none;border-radius:10px;margin-top:10px">Close</button>
   </div>
-
 </div>
-
 </div>
-
-
-
-<!-- ================= MAIN JAVASCRIPT ================= -->
 
 <script>
-
-const BACKEND =
-"https://otp-backend-amwc.onrender.com";
-
-
-// ===============================
-// COUNTRIES
-// ===============================
-
-const countries = [
-  "Nigeria",
-  "USA",
-  "UK",
-  "Canada",
-  "Germany",
-  "France",
-  "India",
-  "South Africa",
-  "Kenya",
-  "Ghana",
-  "USA Virtual",
-  "Poland",
-  "Indonesia",
-  "Brazil",
-  "Turkey",
-  "Netherlands",
-  "Spain",
-  "Australia",
-  "UAE"
-];
-
+const BACKEND = "https://otp-backend-amwc.onrender.com";
+const countries = ["Nigeria","USA","UK","Canada","Germany","France","India","South Africa","Kenya","Ghana","Brazil","Spain","Australia","Netherlands","Sweden","Norway","Poland","Turkey","UAE","Saudi Arabia"];
 let selectedCountry = "Nigeria";
-
-
-// ===============================
-// WALLET
-// ===============================
-
 let currentBalance = 0;
-
-
+function getToken(){ return localStorage.getItem("otphub_backend_token"); }
 function updateWallet(balance){
-
-  currentBalance =
-    Number(balance) || 0;
-
-  const wallet =
-    document.getElementById("walletBtn");
-
-  wallet.textContent =
-    "₦" +
-    currentBalance.toLocaleString(
-      "en-NG",
-      {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 2
-      }
-    );
+  currentBalance = Number(balance)||0;
+  document.getElementById("walletBtn").textContent = "₦" + currentBalance.toLocaleString("en-NG");
 }
-
-
-// ===============================
-// RENDER COUNTRIES
-// ===============================
-
-function renderCountries(filter = ""){
-
-  const row =
-    document.getElementById(
-      "phoneCountryRow"
-    );
-
-  row.innerHTML =
-    countries
-      .filter(c =>
-        c.toLowerCase()
-          .includes(
-            filter.toLowerCase()
-          )
-      )
-      .map(c => `
-
-        <div
-          class="country-chip ${c === selectedCountry ? "active" : ""}"
-          onclick="selectCountry('${c}')">
-
-          ${c}
-
-        </div>
-
-      `)
-      .join("");
+function renderCountries(filter=""){
+  const row=document.getElementById("phoneCountryRow");
+  row.innerHTML = countries.filter(c=>c.toLowerCase().includes(filter.toLowerCase())).map(c=>`<div class="country-chip ${c===selectedCountry?"active":""}" onclick="selectCountry('${c}')">${c}</div>`).join("");
 }
-
-
-window.selectCountry = function(country){
-
-  selectedCountry =
-    country;
-
-  renderCountries();
-
-  renderServices(
-    document.getElementById(
-      "phoneSearch"
-    ).value
-  );
-};
-
-
+window.selectCountry=function(c){ selectedCountry=c; renderCountries(); renderServices(document.getElementById("phoneSearch").value); };
 renderCountries();
-
-
-// ===============================
-// SERVICES
-// ===============================
-
-const servicesList = [
-
-  {
-    name:"WhatsApp",
-    id:"whatsapp",
-    price:"₦1,000",
-    logo:"https://cdn.simpleicons.org/whatsapp/25D366"
-  },
-
-  {
-    name:"Telegram",
-    id:"telegram",
-    price:"₦800",
-    logo:"https://cdn.simpleicons.org/telegram/26A5E4"
-  },
-
-  {
-    name:"Facebook",
-    id:"facebook",
-    price:"₦700",
-    logo:"https://cdn.simpleicons.org/facebook/1877F2"
-  },
-
-  {
-    name:"Google",
-    id:"google",
-    price:"₦900",
-    logo:"https://cdn.simpleicons.org/google/EA4335"
-  },
-
-  {
-    name:"Instagram",
-    id:"instagram",
-    price:"₦800",
-    logo:"https://cdn.simpleicons.org/instagram/E4405F"
-  },
-
-  {
-    name:"Twitter",
-    id:"twitter",
-    price:"₦700",
-    logo:"https://cdn.simpleicons.org/x/ffffff"
-  },
-
-  {
-    name:"Discord",
-    id:"discord",
-    price:"₦600",
-    logo:"https://cdn.simpleicons.org/discord/5865F2"
-  },
-
-  {
-    name:"TikTok",
-    id:"tiktok",
-    price:"₦700",
-    logo:"https://cdn.simpleicons.org/tiktok/ffffff"
-  },
-
-  {
-    name:"Apple",
-    id:"apple",
-    price:"₦1,200",
-    logo:"https://cdn.simpleicons.org/apple/ffffff"
-  },
-
-  {
-    name:"Microsoft",
-    id:"microsoft",
-    price:"₦900",
-    logo:"https://cdn.simpleicons.org/microsoft/00A4EF"
-  },
-
-  {
-    name:"Uber",
-    id:"uber",
-    price:"₦800",
-    logo:"https://cdn.simpleicons.org/uber/000000"
-  },
-
-  {
-    name:"Amazon",
-    id:"amazon",
-    price:"₦900",
-    logo:"https://cdn.simpleicons.org/amazon/FF9900"
-  }
-
+const servicesList=[
+  {name:"WhatsApp",id:"whatsapp",price:"₦1,000",logo:"https://cdn.simpleicons.org/whatsapp/25D366"},
+  {name:"Telegram",id:"telegram",price:"₦800",logo:"https://cdn.simpleicons.org/telegram/26A5E4"},
+  {name:"Facebook",id:"facebook",price:"₦700",logo:"https://cdn.simpleicons.org/facebook/1877F2"},
+  {name:"Google",id:"google",price:"₦900",logo:"https://cdn.simpleicons.org/google/EA4335"},
+  {name:"Instagram",id:"instagram",price:"₦800",logo:"https://cdn.simpleicons.org/instagram/E4405F"},
+  {name:"Twitter",id:"twitter",price:"₦700",logo:"https://cdn.simpleicons.org/x/ffffff"},
+  {name:"Discord",id:"discord",price:"₦600",logo:"https://cdn.simpleicons.org/discord/5865F2"},
+  {name:"TikTok",id:"tiktok",price:"₦700",logo:"https://cdn.simpleicons.org/tiktok/ffffff"},
+  {name:"Apple",id:"apple",price:"₦1,200",logo:"https://cdn.simpleicons.org/apple/ffffff"},
+  {name:"Microsoft",id:"microsoft",price:"₦900",logo:"https://cdn.simpleicons.org/microsoft/00A4EF"},
+  {name:"Uber",id:"uber",price:"₦800",logo:"https://cdn.simpleicons.org/uber/000000"},
+  {name:"Amazon",id:"amazon",price:"₦900",logo:"https://cdn.simpleicons.org/amazon/FF9900"}
 ];
-
-
-function renderServices(filter = ""){
-
-  const element =
-    document.getElementById(
-      "services"
-    );
-
-  element.innerHTML =
-    servicesList
-      .filter(s =>
-        s.name
-          .toLowerCase()
-          .includes(
-            filter.toLowerCase()
-          )
-      )
-      .map(s => `
-
-        <div
-          class="service-card"
-          onclick="buyService('${s.id}','${s.name}')">
-
-          <div class="service-left">
-
-            <div class="service-logo">
-
-              <img
-                src="${s.logo}"
-                alt="${s.name}"/>
-
-            </div>
-
-            <div>
-
-              <div class="service-name">
-                ${s.name}
-              </div>
-
-              <div class="service-meta">
-                ${selectedCountry} • ${s.price}
-              </div>
-
-            </div>
-
-          </div>
-
-          <button
-            class="buy-btn"
-            onclick="event.stopPropagation();buyService('${s.id}','${s.name}')">
-
-            BUY
-
-          </button>
-
-        </div>
-
-      `)
-      .join("");
+function renderServices(filter=""){
+  const el=document.getElementById("services");
+  el.innerHTML = servicesList.filter(s=>s.name.toLowerCase().includes(filter.toLowerCase())).map(s=>`
+    <div class="service-card" onclick="buyService('${s.id}','${s.name}')">
+      <div class="service-left"><div class="service-logo"><img src="${s.logo}" alt="${s.name}"/></div><div><div class="service-name">${s.name}</div><div class="service-meta">${selectedCountry} • ${s.price}</div></div></div>
+      <button class="buy-btn" onclick="event.stopPropagation();buyService('${s.id}','${s.name}')">BUY</button>
+    </div>`).join("");
 }
-
-
 renderServices();
-
-
-// ===============================
-// SEARCH
-// ===============================
-
-document
-  .getElementById("phoneSearch")
-  .addEventListener(
-    "input",
-    event => {
-
-      const value =
-        event.target.value;
-
-      renderCountries(value);
-
-      renderServices(value);
-
-    }
-  );
-
-
-// ===============================
-// COPY OTP
-// ===============================
-
-document
-  .getElementById("copyBtn")
-  .onclick = () => {
-
-    const code =
-      document.getElementById(
-        "otpCode"
-      ).textContent;
-
-    if(code){
-
-      navigator.clipboard
-        .writeText(code);
-
-    }
-
-  };
-
-
-// ===============================
-// LOAD BALANCE
-// ===============================
+document.getElementById("phoneSearch").addEventListener("input", e=>{ renderCountries(e.target.value); renderServices(e.target.value); });
+document.getElementById("copyBtn").onclick=()=>{ const code=document.getElementById("otpCode").textContent; if(code) navigator.clipboard.writeText(code); };
 
 async function loadBalance(){
-
-  const email =
-    document
-      .getElementById(
-        "userEmail"
-      )
-      .textContent
-      .trim()
-      .toLowerCase();
-
-  if(!email) return;
-
-
+  const token=getToken(); if(!token) return;
   try{
-
-    /*
-      Firebase login does not automatically
-      give our backend a JWT.
-
-      So we use the sync endpoint.
-    */
-
-    const response =
-      await fetch(
-        BACKEND +
-        "/api/firebase/sync",
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:JSON.stringify({
-            email:email
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if(
-      data.success &&
-      data.user
-    ){
-
-      const balance =
-        data.user.balances?.nigeria || 0;
-
-      updateWallet(
-        balance
-      );
-
-      /*
-        Save backend JWT for
-        OTP purchase requests.
-      */
-
-      if(data.token){
-
-        localStorage.setItem(
-          "otphub_backend_token",
-          data.token
-        );
-
-      }
-
-    }
-
-  }catch(error){
-
-    console.error(
-      "Balance error:",
-      error
-    );
-
-  }
-
+    const res=await fetch(BACKEND+"/api/user/balance",{headers:{Authorization:"Bearer "+token}});
+    const data=await res.json();
+    if(data.success) updateWallet(data.balances?.nigeria||0);
+  }catch(e){}
 }
-
-
-// ===============================
-// BUY OTP
-// ===============================
-
-window.buyService =
-async function(
-  serviceId,
-  serviceName
-){
-
-  const email =
-    document
-      .getElementById(
-        "userEmail"
-      )
-      .textContent
-      .trim()
-      .toLowerCase();
-
-  if(!email){
-
-    alert(
-      "Please login first"
-    );
-
-    return;
-  }
-
-
-  const token =
-    localStorage.getItem(
-      "otphub_backend_token"
-    );
-
-
-  if(!token){
-
-    await loadBalance();
-
-  }
-
-
-  const finalToken =
-    localStorage.getItem(
-      "otphub_backend_token"
-    );
-
-
-  if(!finalToken){
-
-    alert(
-      "Unable to connect your account. Please logout and login again."
-    );
-
-    return;
-  }
-
-
-  const orderEl =
-    document.getElementById(
-      "activeOrder"
-    );
-
-
-  orderEl.style.display =
-    "block";
-
-  orderEl.classList.remove(
-    "hidden"
-  );
-
-
-  document.getElementById(
-    "orderService"
-  ).textContent =
-    serviceName +
-    " • " +
-    selectedCountry;
-
-
-  document.getElementById(
-    "phoneNumber"
-  ).textContent =
-    "Checking number...";
-
-
-  document.getElementById(
-    "otpBox"
-  ).style.display =
-    "none";
-
-
-  document.getElementById(
-    "otpBox"
-  ).classList.add(
-    "hidden"
-  );
-
-
-  orderEl.scrollIntoView({
-    behavior:"smooth"
-  });
-
-
+async function syncFirebaseUser(user){
   try{
-
-    /*
-      Convert frontend country
-      names to backend country codes.
-    */
-
-    const countryMap = {
-
-      "Nigeria":
-        "nigeria",
-
-      "USA":
-        "usa",
-
-      "UK":
-        "uk",
-
-      "Canada":
-        "canada",
-
-      "Germany":
-        "germany",
-
-      "France":
-        "france",
-
-      "India":
-        "india",
-
-      "South Africa":
-        "southafrica",
-
-      "Kenya":
-        "kenya",
-
-      "Ghana":
-        "ghana",
-
-      "Brazil":
-        "brazil",
-
-      "Spain":
-        "spain",
-
-      "Australia":
-        "australia"
-
-    };
-
-
-    const countryCode =
-      countryMap[
-        selectedCountry
-      ];
-
-
-    if(!countryCode){
-
-      document.getElementById(
-        "phoneNumber"
-      ).textContent =
-        "Number is unavailable";
-
-      return;
-    }
-
-
-    const response =
-      await fetch(
-        BACKEND +
-        "/api/orders",
-        {
-          method:"POST",
-
-          headers:{
-
-            "Content-Type":
-              "application/json",
-
-            "Authorization":
-              "Bearer " +
-              finalToken
-
-          },
-
-          body:JSON.stringify({
-
-            country:
-              countryCode,
-
-            service:
-              serviceId.toLowerCase()
-
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if(!response.ok ||
-       !data.success){
-
-      document.getElementById(
-        "phoneNumber"
-      ).textContent =
-        data.message ||
-        "Number is unavailable";
-
-      return;
-    }
-
-
-    const order =
-      data.order;
-
-
-    if(!order ||
-       !order.phone){
-
-      document.getElementById(
-        "phoneNumber"
-      ).textContent =
-        "Number is unavailable";
-
-      return;
-    }
-
-
-    document.getElementById(
-      "phoneNumber"
-    ).textContent =
-      order.phone;
-
-
-    /*
-      Update wallet immediately
-      after OTP purchase.
-    */
-
-    if(data.balances){
-
-      updateWallet(
-        data.balances.nigeria || 0
-      );
-
-    }
-
-
-    /*
-      Poll for OTP.
-    */
-
-    checkOTP(
-      order.id,
-      finalToken
-    );
-
-
-  }catch(error){
-
-    console.error(error);
-
-    document.getElementById(
-      "phoneNumber"
-    ).textContent =
-      "Number is unavailable now. Check back later.";
-
-  }
-
+    const res=await fetch(BACKEND+"/api/firebase/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:user.email,name:user.displayName||"",picture:user.photoURL||""})});
+    const data=await res.json();
+    if(data.success&&data.token){ localStorage.setItem("otphub_backend_token",data.token); updateWallet(data.user.balances?.nigeria||0); }
+  }catch(e){}
+}
+window.buyService=async function(serviceId,serviceName){
+  const token=getToken(); if(!token){ alert("Please login first"); return; }
+  const countryMap={"Nigeria":"nigeria","USA":"usa","UK":"uk","Canada":"canada","Germany":"germany","France":"france","India":"india","South Africa":"southafrica","Kenya":"kenya","Ghana":"ghana","Brazil":"brazil","Spain":"spain","Australia":"australia","Netherlands":"netherlands","Sweden":"sweden","Norway":"norway","Poland":"poland","Turkey":"turkey","UAE":"uae","Saudi Arabia":"saudiarabia"};
+  const countryCode=countryMap[selectedCountry]; if(!countryCode){ alert("Number is unavailable"); return; }
+  const orderEl=document.getElementById("activeOrder"); orderEl.style.display="block"; orderEl.classList.remove("hidden");
+  document.getElementById("orderService").textContent=serviceName+" • "+selectedCountry;
+  document.getElementById("phoneNumber").textContent="Checking number...";
+  document.getElementById("otpBox").style.display="none"; document.getElementById("otpBox").classList.add("hidden");
+  orderEl.scrollIntoView({behavior:"smooth"});
+  try{
+    const res=await fetch(BACKEND+"/api/orders",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({country:countryCode,service:serviceId.toLowerCase()})});
+    const data=await res.json();
+    if(!res.ok||!data.success){ document.getElementById("phoneNumber").textContent=data.message||"Number is unavailable"; return; }
+    document.getElementById("phoneNumber").textContent=data.order.phone;
+    if(data.balances) updateWallet(data.balances.nigeria||0);
+    checkOTP(data.order.id,token);
+  }catch(e){ document.getElementById("phoneNumber").textContent="Number is unavailable now."; }
 };
-
-
-// ===============================
-// CHECK OTP
-// ===============================
-
-async function checkOTP(
-  orderId,
-  token
-){
-
-  let attempts = 0;
-
-  const maxAttempts =
-    30;
-
-
-  const interval =
-    setInterval(
-      async () => {
-
-        attempts++;
-
-
-        try{
-
-          const response =
-            await fetch(
-              BACKEND +
-              "/api/orders/" +
-              encodeURIComponent(
-                orderId
-              ),
-              {
-                headers:{
-                  "Authorization":
-                    "Bearer " +
-                    token
-                }
-              }
-            );
-
-
-          const data =
-            await response.json();
-
-
-          if(
-            data.success &&
-            data.order
-          ){
-
-            const order =
-              data.order;
-
-
-            if(order.otp){
-
-              clearInterval(
-                interval
-              );
-
-
-              document.getElementById(
-                "otpCode"
-              ).textContent =
-                order.otp;
-
-
-              document.getElementById(
-                "otpBox"
-              ).style.display =
-                "block";
-
-
-              document.getElementById(
-                "otpBox"
-              ).classList.remove(
-                "hidden"
-              );
-
-            }
-
-          }
-
-
-        }catch(error){
-
-          console.error(
-            "OTP check error:",
-            error
-          );
-
-        }
-
-
-        if(
-          attempts >=
-          maxAttempts
-        ){
-
-          clearInterval(
-            interval
-          );
-
-        }
-
-      },
-      10000
-    );
-
-}
-
-
-// ===============================
-// DEPOSIT MODAL
-// ===============================
-
-function openDeposit(){
-
-  const modal =
-    document.getElementById(
-      "topupModal"
-    );
-
-  modal.style.display =
-    "flex";
-
-  modal.classList.remove(
-    "hidden"
-  );
-
-}
-
-
-document
-  .getElementById(
-    "depositBtn"
-  )
-  .onclick =
-  openDeposit;
-
-
-document
-  .getElementById(
-    "walletBtn"
-  )
-  .onclick =
-  openDeposit;
-
-
-document
-  .getElementById(
-    "closeModalBtn"
-  )
-  .onclick =
-  () => {
-
-    const modal =
-      document.getElementById(
-        "topupModal"
-      );
-
-    modal.style.display =
-      "none";
-
-    modal.classList.add(
-      "hidden"
-    );
-
-  };
-
-
-// ===============================
-// PAYSTACK PAYMENT
-// ===============================
-
-document
-  .getElementById(
-    "payBtn"
-  )
-  .onclick =
-  async () => {
-
-    const amount =
-      Number(
-        document.getElementById(
-          "customAmount"
-        ).value
-      );
-
-
-    if(
-      !amount ||
-      amount < 100
-    ){
-
-      alert(
-        "Minimum ₦100"
-      );
-
-      return;
-    }
-
-
-    const email =
-      (
-        document
-          .getElementById(
-            "payEmail"
-          )
-          .value
-          .trim() ||
-
-        document
-          .getElementById(
-            "userEmail"
-          )
-          .textContent
-          .trim()
-      ).toLowerCase();
-
-
-    if(
-      !email.includes("@")
-    ){
-
-      alert(
-        "Enter a valid email"
-      );
-
-      return;
-    }
-
-
-    const status =
-      document.getElementById(
-        "payStatus"
-      );
-
-
-    status.textContent =
-      "Initializing payment...";
-
-
-    const button =
-      document.getElementById(
-        "payBtn"
-      );
-
-
-    button.disabled =
-      true;
-
-
+async function checkOTP(orderId,token){
+  let attempts=0; const max=30;
+  const iv=setInterval(async()=>{
+    attempts++;
     try{
-
-      const response =
-        await fetch(
-          BACKEND +
-          "/api/pay/initialize",
-          {
-            method:"POST",
-
-            headers:{
-              "Content-Type":
-                "application/json"
-            },
-
-            body:JSON.stringify({
-
-              email:
-                email,
-
-              amount:
-                amount
-
-            })
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if(
-        data.status &&
-        data.data &&
-        data.data.authorization_url
-      ){
-
-        status.textContent =
-          "Redirecting to Paystack...";
-
-
-        /*
-          Paystack will return to:
-
-          payment-success.html?trxref=...
-        */
-
-        window.location.href =
-          data.data.authorization_url;
-
-      }else{
-
-        button.disabled =
-          false;
-
-        status.textContent =
-          data.message ||
-          "Unable to start payment";
-
+      const res=await fetch(BACKEND+"/api/orders/"+encodeURIComponent(orderId),{headers:{Authorization:"Bearer "+token}});
+      const data=await res.json();
+      if(data.success&&data.order&&data.order.otp){
+        clearInterval(iv);
+        document.getElementById("otpCode").textContent=data.order.otp;
+        document.getElementById("otpBox").style.display="block";
+        document.getElementById("otpBox").classList.remove("hidden");
       }
+    }catch(e){}
+    if(attempts>=max) clearInterval(iv);
+  },10000);
+}
+function openDeposit(){
+  const modal=document.getElementById("topupModal");
+  modal.style.display="flex"; modal.classList.remove("hidden");
+  const email=document.getElementById("userEmail").textContent.trim();
+  if(email) document.getElementById("payEmail").value=email;
+}
+document.getElementById("depositBtn").onclick=openDeposit;
+document.getElementById("walletBtn").onclick=openDeposit;
+document.getElementById("closeModalBtn").onclick=()=>{ const m=document.getElementById("topupModal"); m.style.display="none"; m.classList.add("hidden"); };
 
-    }catch(error){
-
-      console.error(error);
-
-      button.disabled =
-        false;
-
-      status.textContent =
-        "Payment connection failed";
-
+// FIXED PAY BUTTON
+document.getElementById("payBtn").onclick=async()=>{
+  const amount=Number(document.getElementById("customAmount").value);
+  if(!amount||amount<100){ alert("Minimum ₦100"); return; }
+  const token=getToken(); if(!token){ alert("Please login again"); return; }
+  const email=(document.getElementById("payEmail").value.trim()||document.getElementById("userEmail").textContent.trim()).toLowerCase();
+  if(!email.includes("@")){ alert("Enter valid email"); return; }
+  const status=document.getElementById("payStatus");
+  const btn=document.getElementById("payBtn");
+  status.textContent="Initializing payment..."; btn.disabled=true;
+  try{
+    const res=await fetch(BACKEND+"/api/pay/initialize",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body:JSON.stringify({amount})
+    });
+    const data=await res.json();
+    if(data.status&&data.data&&data.data.authorization_url){
+      window.location.href=data.data.authorization_url;
+    }else{
+      btn.disabled=false; status.textContent=data.message||"Unable to start payment";
     }
-
-  };
-
-
-// ===============================
-// CHECK PAYMENT RETURN
-// ===============================
+  }catch(e){ btn.disabled=false; status.textContent="Payment connection failed"; }
+};
 
 async function checkPaymentReturn(){
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  const reference =
-    params.get(
-      "reference"
-    ) ||
-    params.get(
-      "trxref"
-    );
-
-
+  const params=new URLSearchParams(window.location.search);
+  const reference=params.get("reference")||params.get("trxref");
   if(!reference) return;
-
-
+  const token=getToken(); if(!token) return;
   try{
-
-    const response =
-      await fetch(
-        BACKEND +
-        "/api/pay/verify?reference=" +
-        encodeURIComponent(
-          reference
-        )
-      );
-
-
-    const data =
-      await response.json();
-
-
+    const res=await fetch(BACKEND+"/api/pay/verify?reference="+encodeURIComponent(reference),{headers:{Authorization:"Bearer "+token}});
+    const data=await res.json();
     if(data.success){
-
-      if(data.balances){
-
-        updateWallet(
-          data.balances.nigeria || 0
-        );
-
-      }else{
-
-        await loadBalance();
-
-      }
-
+      updateWallet(data.balances?.nigeria||0);
+      window.history.replaceState({},document.title,window.location.pathname);
+      alert("Payment successful! ₦"+data.amount+" added");
     }
-
-  }catch(error){
-
-    console.error(
-      "Payment return error:",
-      error
-    );
-
-  }
-
+  }catch(e){}
 }
-
-
-// ===============================
-// PAGE LOAD
-// ===============================
-
-window.addEventListener(
-  "load",
-  () => {
-
-    checkPaymentReturn();
-
-  }
-);
-
+window.addEventListener("load",()=>{ checkPaymentReturn(); });
 </script>
-
-
-
-<!-- ================= FIREBASE ================= -->
 
 <script type="module">
-
-import {
-  initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
-
-
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail,
-  onAuthStateChanged,
-  signOut
-}
-from
-"https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
-
-
-const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyB-Wgn8wwpPk5q5sITaHd2tN-GRQj-ZBW4",
-
-  authDomain:
-    "otphub-d1272.firebaseapp.com",
-
-  projectId:
-    "otphub-d1272",
-
-  storageBucket:
-    "otphub-d1272.firebasestorage.app",
-
-  messagingSenderId:
-    "516462339713",
-
-  appId:
-    "1:516462339713:web:04b6044c5bfc403cd4cf80"
-
-};
-
-
-const firebaseApp =
-  initializeApp(
-    firebaseConfig
-  );
-
-
-const auth =
-  getAuth(
-    firebaseApp
-  );
-
-
-// ===============================
-// LOGIN TAB
-// ===============================
-
-document
-  .getElementById(
-    "tabLogin"
-  )
-  .onclick =
-  () => {
-
-    document
-      .getElementById(
-        "loginForm"
-      )
-      .classList.remove(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "registerForm"
-      )
-      .classList.add(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "tabLogin"
-      )
-      .style.background =
-      "#00C896";
-
-
-    document
-      .getElementById(
-        "tabLogin"
-      )
-      .style.color =
-      "#000";
-
-
-    document
-      .getElementById(
-        "tabRegister"
-      )
-      .style.background =
-      "#222";
-
-
-    document
-      .getElementById(
-        "tabRegister"
-      )
-      .style.color =
-      "#fff";
-
-  };
-
-
-// ===============================
-// REGISTER TAB
-// ===============================
-
-document
-  .getElementById(
-    "tabRegister"
-  )
-  .onclick =
-  () => {
-
-    document
-      .getElementById(
-        "registerForm"
-      )
-      .classList.remove(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "loginForm"
-      )
-      .classList.add(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "tabRegister"
-      )
-      .style.background =
-      "#00C896";
-
-
-    document
-      .getElementById(
-        "tabRegister"
-      )
-      .style.color =
-      "#000";
-
-
-    document
-      .getElementById(
-        "tabLogin"
-      )
-      .style.background =
-      "#222";
-
-
-    document
-      .getElementById(
-        "tabLogin"
-      )
-      .style.color =
-      "#fff";
-
-  };
-
-
-// ===============================
-// FIREBASE AUTH STATE
-// ===============================
-
-onAuthStateChanged(
-  auth,
-  async user => {
-
-    const authScreen =
-      document.getElementById(
-        "authScreen"
-      );
-
-
-    const app =
-      document.getElementById(
-        "app"
-      );
-
-
-    if(user){
-
-      authScreen
-        .classList
-        .add("hidden");
-
-
-      authScreen.style.display =
-        "none";
-
-
-      app.classList.remove(
-        "hidden"
-      );
-
-
-      app.style.display =
-        "block";
-
-
-      const email =
-        (
-          user.email || ""
-        )
-        .trim()
-        .toLowerCase();
-
-
-      document
-        .getElementById(
-          "userEmail"
-        )
-        .textContent =
-        email;
-
-
-      document
-        .getElementById(
-          "payEmail"
-        )
-        .value =
-        email;
-
-
-      /*
-        Sync Firebase user with
-        MongoDB and get balance.
-      */
-
-      await syncFirebaseUser(
-        user
-      );
-
-
-      /*
-        Also check current balance.
-      */
-
-      await loadBalance();
-
-
-    }else{
-
-      authScreen
-        .classList
-        .remove("hidden");
-
-
-      authScreen.style.display =
-        "flex";
-
-
-      app.classList.add(
-        "hidden"
-      );
-
-
-      app.style.display =
-        "none";
-
-
-      localStorage.removeItem(
-        "otphub_backend_token"
-      );
-
-
-      updateWallet(0);
-
-    }
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
+const firebaseConfig = { apiKey:"AIzaSyB-Wgn8wwpPk5q5sITaHd2tN-GRQj-ZBW4", authDomain:"otphub-d1272.firebaseapp.com", projectId:"otphub-d1272", storageBucket:"otphub-d1272.firebasestorage.app", messagingSenderId:"516462339713", appId:"1:516462339713:web:04b6044c5bfc403cd4cf80" };
+const firebaseApp=initializeApp(firebaseConfig);
+const auth=getAuth(firebaseApp);
+document.getElementById("tabLogin").onclick=()=>{ document.getElementById("loginForm").classList.remove("hidden"); document.getElementById("registerForm").classList.add("hidden"); document.getElementById("tabLogin").style.background="#00C896"; document.getElementById("tabLogin").style.color="#000"; document.getElementById("tabRegister").style.background="#222"; document.getElementById("tabRegister").style.color="#fff"; };
+document.getElementById("tabRegister").onclick=()=>{ document.getElementById("registerForm").classList.remove("hidden"); document.getElementById("loginForm").classList.add("hidden"); document.getElementById("tabRegister").style.background="#00C896"; document.getElementById("tabRegister").style.color="#000"; document.getElementById("tabLogin").style.background="#222"; document.getElementById("tabLogin").style.color="#fff"; };
+onAuthStateChanged(auth, async user=>{
+  const authScreen=document.getElementById("authScreen"); const app=document.getElementById("app");
+  if(user){
+    authScreen.classList.add("hidden"); authScreen.style.display="none"; app.classList.remove("hidden"); app.style.display="block";
+    const email=(user.email||"").trim().toLowerCase();
+    document.getElementById("userEmail").textContent=email; document.getElementById("payEmail").value=email;
+    await syncFirebaseUser(user); await loadBalance();
+  }else{
+    authScreen.classList.remove("hidden"); authScreen.style.display="flex"; app.classList.add("hidden"); app.style.display="none";
+    localStorage.removeItem("otphub_backend_token"); updateWallet(0);
   }
-);
-
-
-// ===============================
-// FIREBASE → MONGODB
-// ===============================
-
-async function syncFirebaseUser(
-  user
-){
-
+});
+async function syncFirebaseUser(user){
   try{
-
-    const response =
-      await fetch(
-        "https://otp-backend-amwc.onrender.com/api/firebase/sync",
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:JSON.stringify({
-
-            email:
-              user.email,
-
-            name:
-              user.displayName || "",
-
-            picture:
-              user.photoURL || ""
-
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    if(
-      data.success &&
-      data.token
-    ){
-
-      localStorage.setItem(
-        "otphub_backend_token",
-        data.token
-      );
-
-    }
-
-
-    if(
-      data.success &&
-      data.user
-    ){
-
-      updateWallet(
-        data.user.balances?.nigeria || 0
-      );
-
-    }
-
-
-  }catch(error){
-
-    console.error(
-      "Firebase sync error:",
-      error
-    );
-
-  }
-
+    const res=await fetch("https://otp-backend-amwc.onrender.com/api/firebase/sync",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:user.email,name:user.displayName||"",picture:user.photoURL||""})});
+    const data=await res.json(); if(data.success&&data.token){ localStorage.setItem("otphub_backend_token",data.token); updateWallet(data.user.balances?.nigeria||0); }
+  }catch(e){}
 }
-
-
-// ===============================
-// REGISTER
-// ===============================
-
-document
-  .getElementById(
-    "registerForm"
-  )
-  .onsubmit =
-  async event => {
-
-    event.preventDefault();
-
-
-    const email =
-      document
-        .getElementById(
-          "regEmail"
-        )
-        .value
-        .trim();
-
-
-    const password =
-      document
-        .getElementById(
-          "regPass"
-        )
-        .value;
-
-
-    const password2 =
-      document
-        .getElementById(
-          "regPass2"
-        )
-        .value;
-
-
-    if(
-      password !==
-      password2
-    ){
-
-      alert(
-        "Passwords don't match"
-      );
-
-      return;
-    }
-
-
-    if(
-      password.length < 6
-    ){
-
-      alert(
-        "Password must be at least 6 characters"
-      );
-
-      return;
-    }
-
-
-    try{
-
-      await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-
-      /*
-        Firebase auth state listener
-        will automatically sync the user.
-      */
-
-      alert(
-        "Account created successfully!"
-      );
-
-
-    }catch(error){
-
-      alert(
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ===============================
-// LOGIN
-// ===============================
-
-document
-  .getElementById(
-    "loginForm"
-  )
-  .onsubmit =
-  async event => {
-
-    event.preventDefault();
-
-
-    const email =
-      document
-        .getElementById(
-          "loginEmail"
-        )
-        .value
-        .trim();
-
-
-    const password =
-      document
-        .getElementById(
-          "loginPass"
-        )
-        .value;
-
-
-    try{
-
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-
-
-    }catch(error){
-
-      alert(
-        error.message
-      );
-
-    }
-
-  };
-
-
-// ===============================
-// FORGOT PASSWORD
-// ===============================
-
-document
-  .getElementById(
-    "forgotBtn"
-  )
-  .onclick =
-  async () => {
-
-    let email =
-      document
-        .getElementById(
-          "loginEmail"
-        )
-        .value
-        .trim();
-
-
-    if(!email){
-
-      email =
-        prompt(
-          "Enter your email:"
-        );
-
-    }
-
-
-    if(
-      !email ||
-      !email.includes("@")
-    ){
-
-      alert(
-        "Enter a valid email"
-      );
-
-      return;
-    }
-
-
-    try{
-
-      await sendPasswordResetEmail(
-        auth,
-        email
-      );
-
-
-      alert(
-        "Reset email sent! Check your inbox and SPAM folder."
-      );
-
-
-    }catch(error){
-
-      alert(
-        error.message +
-        "\n\nMake sure your GitHub Pages domain is added in Firebase Authorized Domains."
-      );
-
-    }
-
-  };
-
-
-// ===============================
-// LOGOUT
-// ===============================
-
-document
-  .getElementById(
-    "logoutBtn"
-  )
-  .onclick =
-  async () => {
-
-    await signOut(
-      auth
-    );
-
-  };
-
+document.getElementById("registerForm").onsubmit=async e=>{
+  e.preventDefault();
+  const email=document.getElementById("regEmail").value.trim(); const password=document.getElementById("regPass").value; const password2=document.getElementById("regPass2").value;
+  if(password!==password2){ alert("Passwords don't match"); return; }
+  if(password.length<6){ alert("Password must be at least 6 characters"); return; }
+  try{ await createUserWithEmailAndPassword(auth,email,password); alert("Account created successfully!"); }catch(err){ alert(err.message); }
+};
+document.getElementById("loginForm").onsubmit=async e=>{
+  e.preventDefault();
+  const email=document.getElementById("loginEmail").value.trim(); const password=document.getElementById("loginPass").value;
+  try{ await signInWithEmailAndPassword(auth,email,password); }catch(err){ alert(err.message); }
+};
+document.getElementById("forgotBtn").onclick=async()=>{
+  let email=document.getElementById("loginEmail").value.trim(); if(!email) email=prompt("Enter your email:");
+  if(!email||!email.includes("@")){ alert("Enter a valid email"); return; }
+  try{ await sendPasswordResetEmail(auth,email); alert("Reset email sent! Check inbox and SPAM."); }catch(err){ alert(err.message); }
+};
+document.getElementById("logoutBtn").onclick=async()=>{ await signOut(auth); };
+async function loadBalance(){
+  const token=localStorage.getItem("otphub_backend_token"); if(!token) return;
+  try{ const res=await fetch("https://otp-backend-amwc.onrender.com/api/user/balance",{headers:{Authorization:"Bearer "+token}}); const data=await res.json(); if(data.success) updateWallet(data.balances?.nigeria||0); }catch(e){}
+}
+function updateWallet(b){ const el=document.getElementById("walletBtn"); if(el) el.textContent="₦"+(Number(b)||0).toLocaleString("en-NG"); }
 </script>
-
 </body>
 </html>
