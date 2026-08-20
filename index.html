@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="format-detection" content="telephone=no, email=no"/>
 <title>OTPHub</title>
 <style>
 *{box-sizing:border-box}
@@ -29,6 +30,12 @@ body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif}
 .active-card{margin:12px;background:#151515;border:1px solid #252525;border-radius:14px;padding:14px}
 @media(max-width:480px){.services-grid{grid-template-columns:1fr 1fr;gap:8px;padding:8px}.service-card{padding:10px}.service-logo{width:36px;height:36px}.service-logo img{width:23px;height:23px}.service-name{font-size:12px}.buy-btn{padding:6px 10px;font-size:10px}}
 #topupModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;align-items:end;justify-content:center}
+/* NEW FOOTER - DOES NOT BLOCK */
+.support-footer{margin-top:30px;background:#111;border-top:1px solid #222;padding:18px 12px;text-align:center}
+.support-footer-title{font-size:11px;color:#00C896;font-weight:900;letter-spacing:.6px;margin-bottom:10px}
+.support-footer-item{font-size:14px;color:#fff;margin:6px 0}
+.support-phone{color:#ffffff!important;font-weight:900!important;font-size:15px!important;text-decoration:none!important;-webkit-text-fill-color:#ffffff!important}
+.support-email{color:#ffffff!important;font-weight:900!important;font-size:13px!important;text-decoration:none!important;-webkit-text-fill-color:#ffffff!important}
 </style>
 </head>
 <body>
@@ -84,6 +91,14 @@ body{margin:0;background:#0a0a0a;color:#fff;font-family:system-ui,sans-serif}
 </section>
 <h2 style="padding:12px 12px 0;font-size:12px;color:#666">POPULAR SERVICES</h2>
 <section id="services" class="services-grid"></section>
+
+<!-- CUSTOMER CARE FOOTER - NOT FIXED, NO BLOCKING -->
+<footer class="support-footer">
+  <div class="support-footer-title">24/7 CUSTOMER SUPPORT</div>
+  <div class="support-footer-item">📞 <span class="support-phone">+2348035771657</span></div>
+  <div class="support-footer-item">✉️ <span class="support-email">matthewchi1221@gmail.com</span></div>
+</footer>
+
 </main>
 
 <div id="topupModal" class="hidden" style="display:none">
@@ -145,7 +160,6 @@ function renderServices(filter=""){
 renderServices();
 document.getElementById("phoneSearch").addEventListener("input", e=>{ renderCountries(e.target.value); renderServices(e.target.value); });
 document.getElementById("copyBtn").onclick=()=>{ const code=document.getElementById("otpCode").textContent; if(code) navigator.clipboard.writeText(code); };
-
 async function loadBalance(){
   const token=getToken(); if(!token) return;
   try{
@@ -205,7 +219,6 @@ function openDeposit(){
 document.getElementById("depositBtn").onclick=openDeposit;
 document.getElementById("walletBtn").onclick=openDeposit;
 document.getElementById("closeModalBtn").onclick=()=>{ const m=document.getElementById("topupModal"); m.style.display="none"; m.classList.add("hidden"); };
-
 document.getElementById("payBtn").onclick=async()=>{
   const amount=Number(document.getElementById("customAmount").value);
   if(!amount||amount<100){ alert("Minimum ₦100"); return; }
@@ -229,7 +242,6 @@ document.getElementById("payBtn").onclick=async()=>{
     }
   }catch(e){ btn.disabled=false; status.textContent="Payment connection failed"; }
 };
-
 async function checkPaymentReturn(){
   const params=new URLSearchParams(window.location.search);
   const reference=params.get("reference")||params.get("trxref");
@@ -298,20 +310,6 @@ async function loadBalance(){
 }
 function updateWallet(b){ const el=document.getElementById("walletBtn"); if(el) el.textContent="₦"+(Number(b)||0).toLocaleString("en-NG"); }
 </script>
-
-<!-- SUPPORT - WHITE BOLD VISIBLE -->
-<style>
-.support-box{position:fixed;right:16px;bottom:16px;z-index:9999;background:#151515;border:1px solid #333;padding:14px 16px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.7);min-width:220px}
-.support-title{font-size:11px;color:#00C896;font-weight:900;letter-spacing:.6px;margin-bottom:8px}
-.support-item{font-size:14px;color:#fff;margin:6px 0;display:flex;gap:8px;align-items:center}
-.support-item strong{color:#ffffff;font-weight:900;font-size:14px;letter-spacing:.2px}
-</style>
-
-<div class="support-box">
-  <div class="support-title">24/7 CUSTOMER SUPPORT</div>
-  <div class="support-item">📞 <strong>+2348035771657</strong></div>
-  <div class="support-item">✉️ <strong>matthewchi1221@gmail.com</strong></div>
-</div>
 
 </body>
 </html>
