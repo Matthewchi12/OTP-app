@@ -1,37 +1,992 @@
-*{box-sizing:border-box;margin:0;padding:0}:root{--lime:#a3ff12;--bg:#080808;--card:#121212;--border:#1e1e1e}
-body{background:var(--bg);color:#fff;font-family:Inter,Arial,sans-serif;min-height:100vh}
-#toasts{position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.toast{background:#fff;color:#000;padding:11px 16px;border-radius:999px;font-weight:800;font-size:13px}
-.auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px;z-index:100}
-.auth-card{width:100%;max-width:380px;background:#121212;border:1px solid #222;border-radius:24px;padding:26px}
-.auth-sub{color:#666;font-size:12px;margin-top:6px}.tabs{display:flex;gap:6px;margin:20px 0;background:#080808;padding:4px;border-radius:999px;border:1px solid #1a1a1a}
-.tab{flex:1;padding:10px;border-radius:999px;border:0;background:transparent;color:#666;font-weight:700;cursor:pointer}.tab.active{background:#fff;color:#000}
-.input{width:100%;background:#080808;border:1px solid #222;color:#fff;padding:14px;border-radius:12px;margin-top:10px;font-size:14px;outline:none}
-.input:focus{border-color:var(--lime)}.auth-btn{width:100%;background:var(--lime);color:#000;border:0;padding:14px;border-radius:12px;font-weight:900;margin-top:16px;cursor:pointer}
-.header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;position:sticky;top:0;background:rgba(8,8,8,.9);backdrop-filter:blur(16px);border-bottom:1px solid #111;z-index:10}
-.logo{color:var(--lime);font-weight:900;font-size:22px}.header-right{display:flex;align-items:center;gap:8px}
-#userEmail{font-size:10px;color:#777;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wallet{border:0;background:var(--lime);color:#000;padding:8px 14px;border-radius:999px;font-weight:800;cursor:pointer;font-size:12px}
-.logout{border:1px solid #222;background:#111;color:#666;padding:8px 12px;border-radius:999px;font-size:11px;cursor:pointer}
-main{max-width:700px;margin:auto;padding-bottom:80px}.hero{padding:18px 16px 10px}.local-badge{display:inline-block;background:#1a1a1a;border:1px solid #222;padding:6px 10px;border-radius:999px;font-size:11px;color:#aaa;margin-bottom:10px}
-.hero h1{font-size:28px;font-weight:900}.hero h1 span{color:var(--lime)}.hero p{color:#777;font-size:11px;margin-top:6px}
-.search-box{padding:0 16px 8px}.search-box input{width:100%;background:#121212;border:1px solid #222;color:#fff;padding:14px;border-radius:14px;font-size:13px;outline:none}.search-box input:focus{border-color:var(--lime)}
-.country-row{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none}.country-row::-webkit-scrollbar{display:none}
-.country-chip{flex-shrink:0;background:var(--card);border:1px solid var(--border);color:#fff;padding:10px 14px;border-radius:999px;font-weight:600;font-size:12px;cursor:pointer}
-.country-chip.active{border-color:var(--lime);color:var(--lime);background:rgba(163,255,18,.12)}
-.active-card{margin:16px;background:#141414;border:1px solid var(--lime);border-radius:20px;padding:18px}
-.active-head{display:flex;justify-content:space-between;font-weight:700;color:var(--lime);font-size:13px}
-#timer{background:var(--lime);color:#000;padding:4px 10px;border-radius:999px;font-weight:900}.timer-bar{height:3px;background:#222;border-radius:999px;margin:12px 0;overflow:hidden}#timerProgress{height:100%;background:var(--lime);width:100%}
-.phone{font-size:26px;font-weight:900;margin:8px 0}.status{font-size:11px;color:#888;background:#1c1c1c;display:inline-block;padding:4px 8px;border-radius:6px}
-.waiting{margin-top:14px;color:#666;font-size:13px;display:flex;gap:8px;align-items:center}.dot{width:8px;height:8px;background:var(--lime);border-radius:50%;animation:blink 1s infinite}@keyframes blink{50%{opacity:.2}}
-.otp-box{margin-top:14px;background:var(--lime);color:#000;border-radius:14px;padding:16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}.otp-label{font-size:9px;font-weight:900;opacity:.6}#otpCode{font-size:28px;letter-spacing:5px}.copy-pill{background:#000;color:var(--lime);padding:6px 10px;border-radius:999px;font-size:10px;font-weight:800}
-h2{padding:18px 16px 12px;font-size:14px;color:#999}.service-card{display:flex;align-items:center;background:var(--card);border:1px solid var(--border);margin:0 16px 10px;padding:14px;border-radius:16px}
-.service-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-right:12px}.service-info{flex:1}.service-name{font-weight:700;font-size:14px}.service-meta{color:#666;font-size:11px}
-.buy-btn{border:0;background:#fff;color:#000;padding:7px 16px;border-radius:999px;font-weight:800;cursor:pointer;margin-top:6px}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:flex;align-items:flex-end;z-index:200}.modal-content{width:100%;max-width:700px;margin:auto;background:#fff;color:#000;border-radius:24px 24px 0 0;padding:22px}
-.handle{width:36px;height:5px;background:#ddd;border-radius:999px;margin:0 auto 16px}.current{color:#666;font-size:13px;margin:8px 0 14px}
-.topup-option{background:#111;color:#fff;padding:16px;border-radius:14px;margin-top:10px;display:flex;justify-content:space-between;cursor:pointer}.topup-option.popular{background:var(--lime);color:#000}
-.close-btn{width:100%;margin-top:14px;padding:13px;border-radius:12px;border:0;background:#eee;font-weight:700;cursor:pointer}.hidden{display:none!important}
-.deposit-bar{margin-top:14px}
-.deposit-btn{width:100%;background:var(--lime);color:#000;border:0;padding:15px 18px;border-radius:14px;font-weight:900;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px rgba(163,255,18,.25)}
-.deposit-btn:hover{transform:translateY(-1px);filter:brightness(1.05)}
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  width:100%;
+  min-height:100%;
+  background:#080808;
+  -webkit-text-size-adjust:100%;
+}
+
+body{
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+  margin:0;
+  padding:0;
+  background:#080808;
+  color:#fff;
+  font-family:Inter,Arial,sans-serif;
+  overflow-x:hidden;
+  overscroll-behavior-x:none;
+}
+
+/* Prevent Android browser from causing horizontal movement */
+body,
+#app,
+.auth-screen{
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+button,
+input{
+  font-family:inherit;
+}
+
+/* Important for Android inputs */
+input,
+textarea,
+select{
+  font-size:16px !important;
+}
+
+/* ================= TOAST ================= */
+
+#toasts{
+  position:fixed;
+  top:12px;
+  left:0;
+  right:0;
+  z-index:9999;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+
+  pointer-events:none;
+
+  padding-left:12px;
+  padding-right:12px;
+
+  transform:none;
+}
+
+.toast{
+  background:#fff;
+  color:#000;
+  padding:11px 16px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+  max-width:90%;
+  text-align:center;
+}
+
+/* ================= AUTH ================= */
+
+/*
+  IMPORTANT:
+  Do NOT use align-items:center here.
+
+  Android keyboard changes the visible viewport.
+  Centering causes the login card to move when
+  the keyboard opens.
+
+  Instead the card stays near the top.
+*/
+
+.auth-screen{
+  position:fixed;
+  inset:0;
+
+  width:100%;
+  height:100%;
+  height:100dvh;
+
+  background:var(--bg,#080808);
+
+  display:block;
+
+  overflow-y:auto;
+  overflow-x:hidden;
+
+  -webkit-overflow-scrolling:touch;
+
+  padding:
+    max(24px,env(safe-area-inset-top))
+    16px
+    max(24px,env(safe-area-inset-bottom))
+    16px;
+
+  z-index:100;
+}
+
+/*
+  Keep login/signup card stable.
+*/
+.auth-card{
+  width:100%;
+  max-width:380px;
+
+  margin:24px auto 40px;
+
+  background:#121212;
+  border:1px solid #222;
+  border-radius:24px;
+
+  padding:26px;
+
+  position:relative;
+
+  transform:none !important;
+}
+
+/*
+  Prevent the auth card from changing position
+  when Android keyboard appears.
+*/
+.auth-card *{
+  transform:none;
+}
+
+/* ================= AUTH TEXT ================= */
+
+.auth-sub{
+  color:#666;
+  font-size:12px;
+  margin-top:6px;
+}
+
+/* ================= TABS ================= */
+
+.tabs{
+  display:flex;
+  gap:6px;
+
+  margin:20px 0;
+
+  background:#080808;
+  padding:4px;
+
+  border-radius:999px;
+  border:1px solid #1a1a1a;
+}
+
+.tab{
+  flex:1;
+
+  min-height:42px;
+
+  padding:10px;
+
+  border-radius:999px;
+  border:0;
+
+  background:transparent;
+  color:#666;
+
+  font-weight:700;
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.tab.active{
+  background:#fff;
+  color:#000;
+}
+
+/* ================= INPUTS ================= */
+
+.input{
+  width:100%;
+
+  min-height:48px;
+
+  background:#080808;
+  border:1px solid #222;
+
+  color:#fff;
+
+  padding:14px;
+
+  border-radius:12px;
+
+  margin-top:10px;
+
+  font-size:16px !important;
+
+  outline:none;
+
+  appearance:none;
+  -webkit-appearance:none;
+
+  /*
+    Prevent Android weird input movement.
+  */
+  transform:none !important;
+}
+
+.input:focus{
+  border-color:var(--lime);
+  outline:none;
+}
+
+/* ================= AUTH BUTTON ================= */
+
+.auth-btn{
+  width:100%;
+
+  min-height:48px;
+
+  background:var(--lime);
+  color:#000;
+
+  border:0;
+
+  padding:14px;
+
+  border-radius:12px;
+
+  font-weight:900;
+
+  margin-top:16px;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ================= APP ================= */
+
+#app{
+  width:100%;
+  min-height:100vh;
+  min-height:100dvh;
+  overflow-x:hidden;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+  width:100%;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+
+  padding:
+    max(12px,env(safe-area-inset-top))
+    16px
+    12px
+    16px;
+
+  position:sticky;
+  top:0;
+
+  background:rgba(8,8,8,.94);
+
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+
+  border-bottom:1px solid #111;
+
+  z-index:10;
+}
+
+.logo{
+  color:var(--lime);
+  font-weight:900;
+  font-size:22px;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  min-width:0;
+}
+
+#userEmail{
+  font-size:10px;
+  color:#777;
+
+  max-width:80px;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.wallet{
+  border:0;
+  background:var(--lime);
+  color:#000;
+
+  padding:8px 14px;
+
+  border-radius:999px;
+
+  font-weight:800;
+  cursor:pointer;
+  font-size:12px;
+
+  white-space:nowrap;
+}
+
+.logout{
+  border:1px solid #222;
+  background:#111;
+  color:#666;
+
+  padding:8px 12px;
+
+  border-radius:999px;
+
+  font-size:11px;
+  cursor:pointer;
+
+  white-space:nowrap;
+}
+
+/* ================= MAIN ================= */
+
+main{
+  width:100%;
+  max-width:700px;
+
+  margin:auto;
+
+  padding-bottom:
+    max(80px,env(safe-area-inset-bottom));
+}
+
+/* ================= HERO ================= */
+
+.hero{
+  padding:18px 16px 10px;
+}
+
+.local-badge{
+  display:inline-block;
+
+  background:#1a1a1a;
+  border:1px solid #222;
+
+  padding:6px 10px;
+
+  border-radius:999px;
+
+  font-size:11px;
+  color:#aaa;
+
+  margin-bottom:10px;
+}
+
+.hero h1{
+  font-size:28px;
+  font-weight:900;
+}
+
+.hero h1 span{
+  color:var(--lime);
+}
+
+.hero p{
+  color:#777;
+  font-size:11px;
+  margin-top:6px;
+}
+
+/* ================= SEARCH ================= */
+
+.search-box{
+  width:100%;
+  padding:0 16px 8px;
+}
+
+.search-box input{
+  width:100%;
+
+  min-height:48px;
+
+  background:#121212;
+  border:1px solid #222;
+
+  color:#fff;
+
+  padding:14px;
+
+  border-radius:14px;
+
+  font-size:16px !important;
+
+  outline:none;
+
+  appearance:none;
+  -webkit-appearance:none;
+}
+
+.search-box input:focus{
+  border-color:var(--lime);
+}
+
+/* ================= COUNTRIES ================= */
+
+.country-row{
+  width:100%;
+
+  display:flex;
+  gap:8px;
+
+  overflow-x:auto;
+
+  padding:12px 16px;
+
+  scrollbar-width:none;
+
+  -webkit-overflow-scrolling:touch;
+}
+
+.country-row::-webkit-scrollbar{
+  display:none;
+}
+
+.country-chip{
+  flex-shrink:0;
+
+  background:var(--card,#121212);
+
+  border:1px solid var(--border,#1e1e1e);
+
+  color:#fff;
+
+  padding:10px 14px;
+
+  border-radius:999px;
+
+  font-weight:600;
+  font-size:12px;
+
+  cursor:pointer;
+
+  -webkit-tap-highlight-color:transparent;
+}
+
+.country-chip.active{
+  border-color:var(--lime);
+  color:var(--lime);
+
+  background:rgba(163,255,18,.12);
+}
+
+/* ================= ACTIVE ORDER ================= */
+
+.active-card{
+  margin:16px;
+
+  background:#141414;
+
+  border:1px solid var(--lime);
+
+  border-radius:20px;
+
+  padding:18px;
+}
+
+.active-head{
+  display:flex;
+  justify-content:space-between;
+
+  font-weight:700;
+
+  color:var(--lime);
+
+  font-size:13px;
+}
+
+#timer{
+  background:var(--lime);
+  color:#000;
+
+  padding:4px 10px;
+
+  border-radius:999px;
+
+  font-weight:900;
+}
+
+.timer-bar{
+  height:3px;
+
+  background:#222;
+
+  border-radius:999px;
+
+  margin:12px 0;
+
+  overflow:hidden;
+}
+
+#timerProgress{
+  height:100%;
+  background:var(--lime);
+  width:100%;
+}
+
+.phone{
+  font-size:26px;
+  font-weight:900;
+
+  margin:8px 0;
+
+  word-break:break-word;
+}
+
+.status{
+  font-size:11px;
+
+  color:#888;
+
+  background:#1c1c1c;
+
+  display:inline-block;
+
+  padding:4px 8px;
+
+  border-radius:6px;
+}
+
+.waiting{
+  margin-top:14px;
+
+  color:#666;
+
+  font-size:13px;
+
+  display:flex;
+
+  gap:8px;
+
+  align-items:center;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+
+  background:var(--lime);
+
+  border-radius:50%;
+
+  animation:blink 1s infinite;
+}
+
+@keyframes blink{
+  50%{
+    opacity:.2;
+  }
+}
+
+/* ================= OTP ================= */
+
+.otp-box{
+  margin-top:14px;
+
+  background:var(--lime);
+
+  color:#000;
+
+  border-radius:14px;
+
+  padding:16px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+  cursor:pointer;
+}
+
+.otp-label{
+  font-size:9px;
+  font-weight:900;
+  opacity:.6;
+}
+
+#otpCode{
+  font-size:28px;
+  letter-spacing:5px;
+}
+
+.copy-pill{
+  background:#000;
+
+  color:var(--lime);
+
+  padding:6px 10px;
+
+  border-radius:999px;
+
+  font-size:10px;
+
+  font-weight:800;
+}
+
+/* ================= SERVICES ================= */
+
+h2{
+  padding:18px 16px 12px;
+
+  font-size:14px;
+
+  color:#999;
+}
+
+.service-card{
+  display:flex;
+  align-items:center;
+
+  background:var(--card,#121212);
+
+  border:1px solid var(--border,#1e1e1e);
+
+  margin:0 16px 10px;
+
+  padding:14px;
+
+  border-radius:16px;
+
+  min-width:0;
+}
+
+.service-icon{
+  width:44px;
+  height:44px;
+
+  flex-shrink:0;
+
+  border-radius:12px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  font-size:20px;
+
+  margin-right:12px;
+}
+
+.service-info{
+  flex:1;
+  min-width:0;
+}
+
+.service-name{
+  font-weight:700;
+  font-size:14px;
+}
+
+.service-meta{
+  color:#666;
+  font-size:11px;
+
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.buy-btn{
+  flex-shrink:0;
+
+  border:0;
+
+  background:#fff;
+  color:#000;
+
+  padding:7px 16px;
+
+  border-radius:999px;
+
+  font-weight:800;
+
+  cursor:pointer;
+
+  margin-top:6px;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+  position:fixed;
+
+  inset:0;
+
+  width:100%;
+  height:100%;
+  height:100dvh;
+
+  background:rgba(0,0,0,.6);
+
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+
+  display:flex;
+
+  align-items:flex-end;
+
+  z-index:200;
+
+  overflow:hidden;
+}
+
+.modal-content{
+  width:100%;
+
+  max-width:700px;
+
+  margin:auto;
+
+  background:#fff;
+
+  color:#000;
+
+  border-radius:24px 24px 0 0;
+
+  padding:
+    22px
+    22px
+    max(22px,env(safe-area-inset-bottom));
+}
+
+.handle{
+  width:36px;
+  height:5px;
+
+  background:#ddd;
+
+  border-radius:999px;
+
+  margin:0 auto 16px;
+}
+
+.current{
+  color:#666;
+  font-size:13px;
+  margin:8px 0 14px;
+}
+
+.topup-option{
+  background:#111;
+  color:#fff;
+
+  padding:16px;
+
+  border-radius:14px;
+
+  margin-top:10px;
+
+  display:flex;
+
+  justify-content:space-between;
+
+  cursor:pointer;
+}
+
+.topup-option.popular{
+  background:var(--lime);
+  color:#000;
+}
+
+.close-btn{
+  width:100%;
+
+  margin-top:14px;
+
+  padding:13px;
+
+  border-radius:12px;
+
+  border:0;
+
+  background:#eee;
+
+  font-weight:700;
+
+  cursor:pointer;
+}
+
+/* ================= HIDDEN ================= */
+
+.hidden{
+  display:none !important;
+}
+
+/* ================= DEPOSIT ================= */
+
+.deposit-bar{
+  margin-top:14px;
+}
+
+.deposit-btn{
+  width:100%;
+
+  background:var(--lime);
+  color:#000;
+
+  border:0;
+
+  padding:15px 18px;
+
+  border-radius:14px;
+
+  font-weight:900;
+
+  font-size:14px;
+
+  cursor:pointer;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:8px;
+
+  box-shadow:
+    0 4px 12px
+    rgba(163,255,18,.25);
+}
+
+.deposit-btn:hover{
+  filter:brightness(1.05);
+}
+
+/* ================= ANDROID ================= */
+
+@media screen and (max-width:480px){
+
+  .auth-screen{
+    align-items:initial;
+    justify-content:initial;
+  }
+
+  .auth-card{
+    max-width:none;
+    width:100%;
+
+    margin:12px auto 30px;
+
+    padding:22px;
+
+    border-radius:20px;
+  }
+
+  .hero h1{
+    font-size:25px;
+  }
+
+  .header{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .header-right{
+    gap:5px;
+  }
+
+  #userEmail{
+    max-width:60px;
+  }
+
+  .wallet{
+    padding:8px 10px;
+  }
+
+  .logout{
+    padding:8px 9px;
+  }
+
+  .service-card{
+    margin-left:12px;
+    margin-right:12px;
+    padding:12px;
+  }
+
+  .service-icon{
+    width:40px;
+    height:40px;
+    margin-right:9px;
+  }
+
+  .buy-btn{
+    padding:7px 12px;
+  }
+
+  .active-card{
+    margin-left:12px;
+    margin-right:12px;
+  }
+
+}
+
+/* ================= VERY SMALL ANDROID ================= */
+
+@media screen and (max-width:360px){
+
+  .auth-card{
+    padding:18px;
+  }
+
+  .header{
+    padding-left:8px;
+    padding-right:8px;
+  }
+
+  #userEmail{
+    display:none;
+  }
+
+  .hero{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .search-box{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .country-row{
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .service-card{
+    margin-left:8px;
+    margin-right:8px;
+  }
+
+}
+
+/*
+  Android keyboard fix.
+
+  Prevent the focused input from creating
+  unnecessary horizontal scrolling.
+*/
+input:focus{
+  scroll-margin-top:20px;
+}
+
+/*
+  Remove tap flash that can make the UI
+  look like it jumps on Android.
+*/
+button,
+.tab,
+.country-chip,
+.buy-btn{
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
