@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const fixStyle = document.createElement("style");
   fixStyle.textContent = `
-   .hidden { display: none!important; }
+  .hidden { display: none!important; }
     #authScreen { position: fixed; inset: 0; z-index: 9999; overflow-y: auto; background: #0f0f0f; }
     #app { min-height: 100vh; max-width: 100vw; overflow-x: hidden; }
     #successModal { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; }
@@ -12,11 +12,11 @@ document.addEventListener("DOMContentLoaded", () => {
   document.head.appendChild(fixStyle);
 
   const LOCAL_CURRENCIES = [
-    { code: "nigeria", name: "Nigeria", flag: "🇳🇬", currency: "NGN", symbol: "₦", price: 1000, topups: [5000, 10000, 20000] },
-    { code: "usa", name: "USA", flag: "🇺🇸", currency: "USD", symbol: "$", price: 1, topups: [5, 10, 20] },
-    { code: "uk", name: "UK", flag: "🇬🇧", currency: "GBP", symbol: "£", price: 0.8, topups: [5, 10, 15] },
-    { code: "canada", name: "Canada", flag: "🇨🇦", currency: "CAD", symbol: "C$", price: 1.35, topups: [6, 13, 27] },
-    { code: "ghana", name: "Ghana", flag: "🇬🇭", currency: "GHS", symbol: "₵", price: 12, topups: [60, 120, 240] }
+    { code: "nigeria", name: "Nigeria", flag: "🇳🇬", currency: "NGN", symbol: "₦", price: 2000, topups: [5000, 10000, 20000] },
+    { code: "usa", name: "USA", flag: "🇺🇸", currency: "USD", symbol: "$", price: 2, topups: [5, 10, 20] },
+    { code: "uk", name: "UK", flag: "🇬🇧", currency: "GBP", symbol: "£", price: 1.5, topups: [5, 10, 15] },
+    { code: "canada", name: "Canada", flag: "🇨🇦", currency: "CAD", symbol: "C$", price: 2, topups: [6, 13, 27] },
+    { code: "ghana", name: "Ghana", flag: "🇬🇭", currency: "GHS", symbol: "₵", price: 30, topups: [60, 120, 240] }
   ];
 
   const PHONE_COUNTRIES = [
@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const walletBtn = document.getElementById("walletBtn");
     const balanceText = money(state.balance);
     if (els.walletBalance) els.walletBalance.textContent = balanceText;
-    if (walletBtn) walletBtn.textContent = balanceText; // FIXED
+    if (walletBtn) walletBtn.textContent = balanceText;
     if (els.heroPrice) els.heroPrice.textContent = money(local.price);
     if (els.modalCountry) els.modalCountry.textContent = `${local.flag} ${local.currency}`;
     if (els.modalBalance) els.modalBalance.textContent = balanceText;
@@ -231,7 +231,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const data = await res.json();
         if (data.success && data.order && data.order.otp) {
           if (state.active) state.active.otp = data.order.otp;
-          render(); toast("REAL OTP Received: " + data.order.otp); clearInterval(pollInt);
+          // AFTER OTP RECEIVED, refresh balance to show 2000 debited
+          if (data.balances) {
+            currentUser.balances = data.balances;
+            localStorage.setItem("otphub_user", JSON.stringify(currentUser));
+            state.balance = Number(data.balances.nigeria?? 0);
+            render();
+          } else {
+            await refreshBalance();
+          }
+          toast("REAL OTP Received: " + data.order.otp + " - ₦2000 debited");
+          clearInterval(pollInt);
         }
       } catch (e) { console.log("OTP polling error:", e); }
     }, 5000);
@@ -334,12 +344,12 @@ document.addEventListener("DOMContentLoaded", () => {
   if (els.services) els.services.onclick = async e => {
     const button = e.target.closest(".buy-btn"); if (!button) return;
     await refreshBalance();
-    if (state.balance < Number(local.price)) {
+    if (state.balance < 2000) {
       if (els.activeOrder) els.activeOrder.classList.remove("hidden");
       if (els.phoneNumber) els.phoneNumber.textContent = "insufficient balance add money";
-      if (els.orderStatus) els.orderStatus.textContent = "Low Balance";
+      if (els.orderStatus) els.orderStatus.textContent = "Low Balance - Need ₦2000";
       if (els.topupModal) els.topupModal.classList.remove("hidden");
-      toast("Insufficient balance. Add money."); return;
+      toast("Insufficient balance. Need ₦2000"); return;
     }
     const serviceId = button.dataset.id; button.textContent = "Buying..."; button.disabled = true;
     try {
@@ -349,15 +359,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!res) { button.textContent = "Buy"; button.disabled = false; return; }
       const data = await res.json();
       if (!data.success) { button.textContent = "Buy"; button.disabled = false; toast(data.message || "Buy failed"); return; }
-      if (data.balances) {
-        if (!currentUser) currentUser = {};
-        currentUser.balances = data.balances;
-        localStorage.setItem("otphub_user", JSON.stringify(currentUser));
-        state.balance = Number(data.balances[local.code]?? data.balances.nigeria?? 0);
-      }
       const serviceInfo = SERVICES.find(s => s.id === serviceId);
       state.active = { id: data.order.id, name: serviceInfo? serviceInfo.name : serviceId, icon: serviceInfo? serviceInfo.icon : "💬", phone: data.order.phone, otp: data.order.otp || null, expiresAt: Date.now() + 900000 };
-      render(); startTimer(); startPolling(data.order.id); toast("REAL number bought: " + data.order.phone);
+      render(); startTimer(); startPolling(data.order.id); toast("Number bought: " + data.order.phone + " - Pay only when OTP arrives");
     } catch (error) { console.error(error); toast("Error buying number"); button.textContent = "Buy"; button.disabled = false; }
   };
 
@@ -380,4 +384,3 @@ document.addEventListener("DOMContentLoaded", () => {
   checkPaymentReturn();
   render();
 });
- 
