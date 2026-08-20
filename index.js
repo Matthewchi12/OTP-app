@@ -1,263 +1,383 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
-const crypto = require("crypto");
+document.addEventListener("DOMContentLoaded", () => {
+  const API_URL = "https://otp-backend-amwc.onrender.com";
 
-dotenv.config();
-const app = express();
-app.use(cors({ origin: "*" }));
+  const fixStyle = document.createElement("style");
+  fixStyle.textContent = `
+   .hidden { display: none!important; }
+    #authScreen { position: fixed; inset: 0; z-index: 9999; overflow-y: auto; background: #0f0f0f; }
+    #app { min-height: 100vh; max-width: 100vw; overflow-x: hidden; }
+    #successModal { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; }
+    #successModal.box { background: #1a1a1a; padding: 24px; border-radius: 16px; text-align: center; max-width: 340px; width: 90%; }
+  `;
+  document.head.appendChild(fixStyle);
 
-// FIX: Webhook raw body BEFORE json
-app.post("/api/pay/webhook", express.raw({type: "application/json"}), async (req,res) => {
-  try {
-    const signature = req.headers["x-paystack-signature"];
-    if (!signature) return res.sendStatus(401);
-    const expected = crypto.createHmac("sha512", PAYSTACK_SECRET).update(req.body).digest("hex");
-    if (signature!== expected) return res.sendStatus(401);
-    res.sendStatus(200);
-    const payload = JSON.parse(req.body.toString());
-    if (payload.event === "charge.success") {
-      const ref = payload.data?.reference;
-      if (ref) { try { await processPayment(ref); } catch(e){} }
+  const LOCAL_CURRENCIES = [
+    { code: "nigeria", name: "Nigeria", flag: "🇳🇬", currency: "NGN", symbol: "₦", price: 1000, topups: [5000, 10000, 20000] },
+    { code: "usa", name: "USA", flag: "🇺🇸", currency: "USD", symbol: "$", price: 1, topups: [5, 10, 20] },
+    { code: "uk", name: "UK", flag: "🇬🇧", currency: "GBP", symbol: "£", price: 0.8, topups: [5, 10, 15] },
+    { code: "canada", name: "Canada", flag: "🇨🇦", currency: "CAD", symbol: "C$", price: 1.35, topups: [6, 13, 27] },
+    { code: "ghana", name: "Ghana", flag: "🇬🇭", currency: "GHS", symbol: "₵", price: 12, topups: [60, 120, 240] }
+  ];
+
+  const PHONE_COUNTRIES = [
+    {code:"usa",name:"USA",flag:"🇺🇸",prefix:"+1"},
+    {code:"uk",name:"UK",flag:"🇬🇧",prefix:"+44"},
+    {code:"canada",name:"Canada",flag:"🇨🇦",prefix:"+1"},
+    {code:"nigeria",name:"Nigeria",flag:"🇳🇬",prefix:"+234"},
+    {code:"ghana",name:"Ghana",flag:"🇬🇭",prefix:"+233"},
+    {code:"kenya",name:"Kenya",flag:"🇰🇪",prefix:"+254"},
+    {code:"southafrica",name:"South Africa",flag:"🇿🇦",prefix:"+27"},
+    {code:"india",name:"India",flag:"🇮🇳",prefix:"+91"},
+    {code:"germany",name:"Germany",flag:"🇩🇪",prefix:"+49"},
+    {code:"france",name:"France",flag:"🇫🇷",prefix:"+33"},
+    {code:"spain",name:"Spain",flag:"🇪🇸",prefix:"+34"},
+    {code:"italy",name:"Italy",flag:"🇮🇹",prefix:"+39"},
+    {code:"netherlands",name:"Netherlands",flag:"🇳🇱",prefix:"+31"},
+    {code:"sweden",name:"Sweden",flag:"🇸🇪",prefix:"+46"},
+    {code:"norway",name:"Norway",flag:"🇳🇴",prefix:"+47"},
+    {code:"poland",name:"Poland",flag:"🇵🇱",prefix:"+48"},
+    {code:"turkey",name:"Turkey",flag:"🇹🇷",prefix:"+90"},
+    {code:"uae",name:"UAE",flag:"🇦🇪",prefix:"+971"},
+    {code:"saudiarabia",name:"Saudi Arabia",flag:"🇸🇦",prefix:"+966"},
+    {code:"egypt",name:"Egypt",flag:"🇪🇬",prefix:"+20"},
+    {code:"morocco",name:"Morocco",flag:"🇲🇦",prefix:"+212"},
+    {code:"australia",name:"Australia",flag:"🇦🇺",prefix:"+61"},
+    {code:"brazil",name:"Brazil",flag:"🇧🇷",prefix:"+55"},
+    {code:"mexico",name:"Mexico",flag:"🇲🇽",prefix:"+52"}
+  ];
+
+  const SERVICES = [
+    { id:"whatsapp", name:"WhatsApp", icon:"💬", color:"#25D366" },
+    { id:"telegram", name:"Telegram", icon:"✈️", color:"#2AABEE" },
+    { id:"facebook", name:"Facebook", icon:"📘", color:"#1877F2" },
+    { id:"instagram", name:"Instagram", icon:"📸", color:"#E4405F" },
+    { id:"tiktok", name:"TikTok", icon:"🎵", color:"#000" },
+    { id:"google", name:"Google", icon:"🔍", color:"#DB4437" }
+  ];
+
+  const $ = id => document.getElementById(id);
+  const els = {
+    authScreen: $("authScreen"), app: $("app"), toasts: $("toasts"),
+    tabLogin: $("tabLogin"), tabRegister: $("tabRegister"),
+    loginForm: $("loginForm"), registerForm: $("registerForm"),
+    phoneCountryRow: $("phoneCountryRow"), services: $("services"),
+    activeOrder: $("activeOrder"), walletBalance: $("walletBalance"),
+    heroPrice: $("heroPrice"), localBadge: $("localBadge"),
+    servicesTitle: $("servicesTitle"), orderService: $("orderService"),
+    timer: $("timer"), timerProgress: $("timerProgress"),
+    phoneNumber: $("phoneNumber"), orderStatus: $("orderStatus"),
+    otpBox: $("otpBox"), otpCode: $("otpCode"), waitingText: $("waitingText"),
+    topupModal: $("topupModal"), modalCountry: $("modalCountry"),
+    modalBalance: $("modalBalance"), topupOptions: $("topupOptions"),
+    userEmail: $("userEmail"), phoneSearch: $("phoneSearch")
+  };
+
+  let local = LOCAL_CURRENCIES[0];
+  let selected = PHONE_COUNTRIES.find(c => c.code === "nigeria") || PHONE_COUNTRIES[0];
+  let currentUser = null;
+  let state = { balance: 0, active: null, search: "" };
+  let timerInt = null, pollInt = null;
+
+  const toast = message => {
+    if (!els.toasts) { alert(message); return; }
+    const d = document.createElement("div");
+    d.className = "toast"; d.innerText = message;
+    els.toasts.appendChild(d);
+    setTimeout(() => d.remove(), 4000);
+  };
+
+  const money = amount => {
+    const value = Number(amount) || 0;
+    if (local.currency === "NGN") return `${local.symbol}${value.toLocaleString()}`;
+    return `${local.symbol}${value}`;
+  };
+
+  function getToken() { return localStorage.getItem("otphub_token"); }
+
+  async function fetchWithAuth(url, options = {}) {
+    const token = getToken();
+    if (!token) { toast("Please login again"); return null; }
+    options.headers = {...(options.headers || {}), "Authorization": `Bearer ${token}` };
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+      toast("Session expired, please login again");
+      localStorage.removeItem("otphub_token");
+      localStorage.removeItem("otphub_user");
+      setTimeout(()=>location.reload(), 1000);
+      return null;
     }
-  } catch(e){ if(!res.headersSent) res.sendStatus(200); }
-});
-
-app.use(express.json());
-
-const PORT = process.env.PORT || 10000;
-const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_change_me";
-const JWT_EXPIRES = process.env.JWT_EXPIRES || "30d";
-const FIVESIM_KEY = process.env.FIVESIM_API_KEY || process.env.FIVESIM_KEY || "";
-const MONGODB_URI = process.env.MONGODB_URI || "";
-const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY || "";
-const FRONTEND_URL = process.env.FRONTEND_URL || "https://matthewchi12.github.io";
-
-const countries = [
-  { code:"nigeria", name:"Nigeria", prefix:"+234", currency:"NGN", price:1000, topups:[5000,10000,20000], fivesim:"nigeria" },
-  { code:"usa", name:"USA", prefix:"+1", currency:"USD", price:1, topups:[5,10,20], fivesim:"usa" },
-  { code:"uk", name:"UK", prefix:"+44", currency:"GBP", price:0.80, topups:[5,10,15], fivesim:"england" },
-  { code:"canada", name:"Canada", prefix:"+1", currency:"CAD", price:1.35, topups:[6,13,27], fivesim:"canada" },
-  { code:"ghana", name:"Ghana", prefix:"+233", currency:"GHS", price:12, topups:[60,120,240], fivesim:"ghana" },
-  { code:"kenya", name:"Kenya", prefix:"+254", currency:"KES", price:130, topups:[650,1300,2600], fivesim:"kenya" },
-  { code:"india", name:"India", prefix:"+91", currency:"INR", price:70, topups:[350,700,1400], fivesim:"india" },
-  { code:"southafrica", name:"South Africa", prefix:"+27", currency:"ZAR", price:18, topups:[90,180,360], fivesim:"southafrica" },
-  { code:"germany", name:"Germany", prefix:"+49", currency:"EUR", price:0.9, topups:[5,9,18], fivesim:"germany" },
-  { code:"france", name:"France", prefix:"+33", currency:"EUR", price:0.9, topups:[5,9,18], fivesim:"france" },
-  { code:"spain", name:"Spain", prefix:"+34", currency:"EUR", price:0.9, topups:[5,9,18], fivesim:"spain" },
-  { code:"italy", name:"Italy", prefix:"+39", currency:"EUR", price:0.9, topups:[5,9,18], fivesim:"italy" },
-  { code:"australia", name:"Australia", prefix:"+61", currency:"AUD", price:1.5, topups:[7,15,30], fivesim:"australia" },
-  { code:"brazil", name:"Brazil", prefix:"+55", currency:"BRL", price:5, topups:[25,50,100], fivesim:"brazil" },
-  { code:"mexico", name:"Mexico", prefix:"+52", currency:"MXN", price:18, topups:[90,180,360], fivesim:"mexico" }
-];
-
-if (MONGODB_URI) { mongoose.connect(MONGODB_URI).then(()=>console.log("✅ MongoDB")).catch(e=>console.log("❌ Mongo", e.message)); }
-
-const UserSchema = new mongoose.Schema({
-  email:{type:String, unique:true, lowercase:true, trim:true},
-  passwordHash:{type:String, default:null},
-  authProvider:{type:String, enum:["email","google","firebase"], default:"email"},
-  googleId:{type:String, default:null}, name:{type:String, default:""}, picture:{type:String, default:""},
-  balances:{type:mongoose.Schema.Types.Mixed, default:{}},
-  createdAt:{type:Date, default:Date.now}, lastLogin:{type:Date, default:Date.now}
-});
-const OrderSchema = new mongoose.Schema({
-  id:String, userId:String, email:String, country:String, service:String, phone:String,
-  fiveSimId:{type:String, default:null}, price:Number, status:String, otp:{type:String, default:null},
-  isReal:Boolean, createdAt:{type:Date, default:Date.now}, expiresAt:Date
-});
-const TransactionSchema = new mongoose.Schema({
-  reference:{type:String, unique:true}, email:String, userId:String, amount:Number, status:String,
-  raw:{type:mongoose.Schema.Types.Mixed, default:{}}, creditedAt:{type:Date, default:null}, createdAt:{type:Date, default:Date.now}
-});
-const User = mongoose.models.User || mongoose.model("User", UserSchema);
-const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
-const Transaction = mongoose.models.Transaction || mongoose.model("Transaction", TransactionSchema);
-
-function getDefaultBalances(){ const b={}; countries.forEach(c=>b[c.code]=0); return b; }
-function ensureBalances(user){
-  if(!user.balances) user.balances=getDefaultBalances();
-  countries.forEach(c=>{ if(user.balances[c.code]===undefined||user.balances[c.code]===null) user.balances[c.code]=0; });
-  return user.balances;
-}
-function generateId(){ return "ORD-"+Date.now()+"-"+Math.random().toString(36).slice(2,8); }
-function generateToken(user){ return jwt.sign({id:user._id.toString(), email:user.email}, JWT_SECRET, {expiresIn:JWT_EXPIRES}); }
-
-// FIX: accepts Bearer or bearer + trim
-async function authMiddleware(req,res,next){
-  const header=req.headers.authorization;
-  if(!header||!header.toLowerCase().startsWith("bearer ")) return res.status(401).json({success:false, message:"No token"});
-  try{
-    const token=header.split(" ")[1]?.trim();
-    if(!token) return res.status(401).json({success:false, message:"No token"});
-    const decoded=jwt.verify(token, JWT_SECRET);
-    const user=await User.findById(decoded.id);
-    if(!user) return res.status(401).json({success:false, message:"User not found"});
-    ensureBalances(user); req.user=user; next();
-  }catch(e){ return res.status(401).json({success:false, message:"Invalid token"}); }
-}
-
-app.get("/api/health",(req,res)=>{ res.json({success:true, hasApiKey:!!FIVESIM_KEY, hasPaystack:!!PAYSTACK_SECRET, mongoConnected:mongoose.connection.readyState===1}); });
-
-app.post("/api/auth/register", async (req,res)=>{
-  try{
-    const {email,password}=req.body;
-    if(!email||!password) return res.status(400).json({success:false, message:"Email and password required"});
-    const cleanEmail=String(email).trim().toLowerCase();
-    const exists=await User.findOne({email:cleanEmail});
-    if(exists) return res.status(409).json({success:false, message:"Email exists"});
-    const passwordHash=await bcrypt.hash(password,10);
-    const user=await User.create({email:cleanEmail, passwordHash, authProvider:"email", balances:getDefaultBalances()});
-    const token=generateToken(user);
-    res.status(201).json({success:true, token, user:{id:user._id, email:user.email, balances:user.balances}});
-  }catch(e){ res.status(500).json({success:false, message:e.message}); }
-});
-
-app.post("/api/auth/login", async (req,res)=>{
-  try{
-    const cleanEmail=String(req.body.email||"").trim().toLowerCase();
-    const user=await User.findOne({email:cleanEmail});
-    if(!user) return res.status(401).json({success:false, message:"Invalid email or password"});
-    if(!user.passwordHash) return res.status(401).json({success:false, message:"This account uses another login method"});
-    const match=await bcrypt.compare(req.body.password, user.passwordHash);
-    if(!match) return res.status(401).json({success:false, message:"Invalid email or password"});
-    ensureBalances(user); user.lastLogin=new Date(); user.markModified("balances"); await user.save();
-    const token=generateToken(user);
-    res.json({success:true, token, user:{id:user._id, email:user.email, balances:user.balances}});
-  }catch(e){ res.status(500).json({success:false, message:e.message}); }
-});
-
-app.get("/api/user/me", authMiddleware, async (req,res)=>{
-  const fresh=await User.findById(req.user._id); ensureBalances(fresh); await fresh.save();
-  res.json({success:true, balances:fresh.balances, user:fresh});
-});
-app.get("/api/user/balance", authMiddleware, async (req,res)=>{
-  const fresh=await User.findById(req.user._id); ensureBalances(fresh); await fresh.save();
-  res.json({success:true, balances:fresh.balances});
-});
-app.post("/api/firebase/sync", async (req,res)=>{
-  try{
-    const {email, name="", picture=""}=req.body;
-    if(!email) return res.status(400).json({success:false, message:"Email required"});
-    const cleanEmail=email.trim().toLowerCase();
-    let user=await User.findOne({email:cleanEmail});
-    if(!user) user=await User.create({email:cleanEmail, name, picture, authProvider:"firebase", balances:getDefaultBalances()});
-    else { ensureBalances(user); user.lastLogin=new Date(); user.markModified("balances"); await user.save(); }
-    const token=generateToken(user);
-    res.json({success:true, token, user:{id:user._id, email:user.email, balances:user.balances}});
-  }catch(e){ res.status(500).json({success:false, message:e.message}); }
-});
-
-app.post("/api/orders", authMiddleware, async (req,res)=>{
-  try{
-    const {country, service}=req.body;
-    const selectedCountry=countries.find(c=>c.code===country);
-    if(!selectedCountry) return res.status(400).json({success:false, message:"Number is unavailable"});
-    if(!FIVESIM_KEY) return res.status(500).json({success:false, message:"5SIM API key missing"});
-    const price=Number(selectedCountry.price);
-    const balances=ensureBalances(req.user);
-    const currentBalance=Number(balances[country])||0;
-    if(currentBalance<price) return res.status(400).json({success:false, message:"insufficient balance add money"});
-    let realPhone=null, fiveSimId=null;
-    try{
-      const resp=await fetch(`https://5sim.net/v1/user/buy/activation/${selectedCountry.fivesim}/any/${service}`, {headers:{Authorization:`Bearer ${FIVESIM_KEY}`, Accept:"application/json"}});
-      const data=await resp.json();
-      if(resp.ok&&data.phone){ realPhone=data.phone; fiveSimId=data.id; }
-      else return res.status(400).json({success:false, message:"Number is unavailable"});
-    }catch(e){ return res.status(400).json({success:false, message:"Number is unavailable"}); }
-    balances[country]=currentBalance-price;
-    req.user.balances=balances; req.user.markModified("balances"); await req.user.save();
-    const order=await Order.create({id:generateId(), userId:req.user._id.toString(), email:req.user.email, country, service, phone:realPhone, fiveSimId, price, status:"waiting", isReal:true, createdAt:new Date(), expiresAt:new Date(Date.now()+15*60*1000)});
-    res.json({success:true, order, balances:req.user.balances});
-  }catch(e){ res.status(500).json({success:false, message:"Number is unavailable"}); }
-});
-
-app.get("/api/orders/:orderId", authMiddleware, async (req,res)=>{
-  try{
-    const order=await Order.findOne({id:req.params.orderId, userId:req.user._id.toString()});
-    if(!order) return res.status(404).json({success:false, message:"Not found"});
-    if(order.fiveSimId&&FIVESIM_KEY&&!order.otp){
-      try{
-        const resp=await fetch(`https://5sim.net/v1/user/check/${order.fiveSimId}`, {headers:{Authorization:`Bearer ${FIVESIM_KEY}`, Accept:"application/json"}});
-        const data=await resp.json();
-        if(data.sms&&data.sms[0]){ order.otp=data.sms[0].code||data.sms[0].text?.match(/\d{4,6}/)?.[0]; order.status="received"; await order.save(); }
-      }catch(e){}
-    }
-    res.json({success:true, order});
-  }catch(e){ res.status(500).json({success:false, message:e.message}); }
-});
-
-app.post("/api/pay/initialize", authMiddleware, async (req,res)=>{
-  try{
-    const {amount}=req.body;
-    if(!PAYSTACK_SECRET) return res.status(500).json({success:false, message:"PAYSTACK_SECRET_KEY missing"});
-    const numericAmount=Number(amount);
-    if(!Number.isFinite(numericAmount)||numericAmount<100) return res.status(400).json({success:false, message:"Minimum payment is ₦100"});
-    const cleanEmail=String(req.user.email).trim().toLowerCase();
-    const callbackUrl=`${FRONTEND_URL}/`;
-    const response=await fetch("https://api.paystack.co/transaction/initialize", {
-      method:"POST", headers:{Authorization:`Bearer ${PAYSTACK_SECRET}`, "Content-Type":"application/json"},
-      body:JSON.stringify({email:cleanEmail, amount:Math.round(numericAmount*100), currency:"NGN", callback_url:callbackUrl, metadata:{userId:req.user._id.toString(), email:cleanEmail, purpose:"wallet_funding"}})
-    });
-    const data=await response.json();
-    if(!response.ok||!data.status||!data.data) return res.status(400).json({success:false, message:data.message||"Unable to initialize payment"});
-    await Transaction.findOneAndUpdate({reference:data.data.reference},{reference:data.data.reference, email:cleanEmail, userId:req.user._id.toString(), amount:numericAmount, status:"pending", raw:data.data},{upsert:true, new:true});
-    res.json(data);
-  }catch(e){ res.status(500).json({success:false, message:"Payment initialization failed"}); }
-});
-
-async function processPayment(reference){
-  if(!reference) throw new Error("Payment reference missing");
-  if(!PAYSTACK_SECRET) throw new Error("PAYSTACK_SECRET_KEY missing");
-  let transaction=await Transaction.findOne({reference});
-  if(transaction&&transaction.status==="success"){
-    const user=await User.findById(transaction.userId);
-    if(!user) throw new Error("User account not found");
-    ensureBalances(user);
-    return {success:true, alreadyCredited:true, amount:transaction.amount, reference, balances:user.balances};
+    return res;
   }
-  const response=await fetch(`https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`, {headers:{Authorization:`Bearer ${PAYSTACK_SECRET}`, Accept:"application/json"}});
-  const data=await response.json();
-  if(!response.ok||!data.status||!data.data) throw new Error(data.message||"Paystack verification failed");
-  const payment=data.data;
-  if(payment.status!=="success") return {success:false, message:"Payment has not been completed", status:payment.status};
-  const paidReference=payment.reference;
-  const paidEmail=String(payment.customer?.email||transaction?.email||"").trim().toLowerCase();
-  if(!paidEmail) throw new Error("Payment email missing");
-  const paidAmount=Number(payment.amount)/100;
-  let user=null;
-  if(transaction&&transaction.userId) user=await User.findById(transaction.userId);
-  if(!user){ const mid=payment.metadata?.userId; if(mid){ try{ user=await User.findById(mid); }catch(e){} } }
-  if(!user) user=await User.findOne({email:paidEmail});
-  if(!user) throw new Error("User account not found");
-  const existingSuccess=await Transaction.findOne({reference:paidReference, status:"success"});
-  if(existingSuccess){ ensureBalances(user); return {success:true, alreadyCredited:true, amount:existingSuccess.amount, reference:paidReference, balances:user.balances}; }
-  ensureBalances(user);
-  user.balances.nigeria=(Number(user.balances.nigeria)||0)+paidAmount;
-  user.markModified("balances"); await user.save();
-  await Transaction.findOneAndUpdate({reference:paidReference},{reference:paidReference, email:paidEmail, userId:user._id.toString(), amount:paidAmount, status:"success", raw:payment, creditedAt:new Date()},{upsert:true, new:true});
-  return {success:true, alreadyCredited:false, amount:paidAmount, reference:paidReference, balances:user.balances};
-}
 
-app.get("/api/pay/verify", authMiddleware, async (req,res)=>{
-  try{
-    const result=await processPayment(req.query.reference);
-    const tx=await Transaction.findOne({reference:req.query.reference});
-    if(tx&&tx.userId!==req.user._id.toString()) return res.status(403).json({success:false, message:"Payment does not belong to this account"});
-    res.json(result);
-  }catch(e){ res.status(500).json({success:false, message:e.message}); }
-});
-app.get("/api/pay/verify/:reference", authMiddleware, async (req,res)=>{
-  try{
-    const result=await processPayment(req.params.reference);
-    const tx=await Transaction.findOne({reference:req.params.reference});
-    if(tx&&tx.userId!==req.params.reference&&tx.userId!==req.user._id.toString()){}
-    if(tx&&tx.userId!==req.user._id.toString()) return res.status(403).json({success:false, message:"Payment does not belong to this account"});
-    res.json(result);
-  }catch(e){ res.status(500).json({success:false, message:e.message}); }
-});
+  async function refreshBalance() {
+    const token = getToken();
+    if (!token) return;
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/user/balance`);
+      if (!res) return;
+      const data = await res.json();
+      if (!res.ok ||!data.success) return;
+      if (!currentUser) currentUser = {};
+      currentUser.balances = data.balances || {};
+      localStorage.setItem("otphub_user", JSON.stringify(currentUser));
+      state.balance = Number(data.balances?.[local.code]?? data.balances?.nigeria?? 0);
+      render();
+    } catch (error) { console.log("Balance refresh error:", error); }
+  }
 
-app.listen(PORT, ()=>{ console.log(`✅ FIXED - Token + Wallet works - Port ${PORT}`); });
+  function showPaymentSuccess(amount, balances) {
+    let modal = document.getElementById("successModal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "successModal";
+      modal.innerHTML = `
+        <div class="box">
+          <div style="font-size:48px">✅</div>
+          <h2 style="color:#fff;margin:12px 0">Payment Successful!</h2>
+          <p id="successText" style="color:#aaa"></p>
+          <div id="successBal" style="font-size:22px;font-weight:800;color:#25D366;margin:12px 0;"></div>
+          <button id="successClose" style="background:#25D366;color:#fff;border:none;padding:12px 24px;border-radius:10px;width:100%;font-weight:700;">Continue</button>
+        </div>`;
+      document.body.appendChild(modal);
+      modal.querySelector("#successClose").onclick = () => modal.classList.add("hidden");
+      modal.onclick = e => { if (e.target.id === "successModal") modal.classList.add("hidden"); };
+    }
+    const nigeriaBalance = balances && balances.nigeria!= null? Number(balances.nigeria) : Number(state.balance) || 0;
+    modal.querySelector("#successText").textContent = `₦${Number(amount || 0).toLocaleString()} added to your wallet`;
+    modal.querySelector("#successBal").textContent = `New Balance: ₦${nigeriaBalance.toLocaleString()}`;
+    modal.classList.remove("hidden");
+  }
+
+  function showApp(user, token) {
+    currentUser = user;
+    if (token) localStorage.setItem("otphub_token", token);
+    if (!user.balances) user.balances = {};
+    LOCAL_CURRENCIES.forEach(c => { if (user.balances[c.code] === undefined || user.balances[c.code] === null) user.balances[c.code] = 0; });
+    localStorage.setItem("otphub_user", JSON.stringify(user));
+    state.balance = Number(user.balances[local.code]?? user.balances.nigeria?? 0);
+    if (els.authScreen) { els.authScreen.classList.add("hidden"); els.authScreen.style.display = "none"; }
+    document.body.style.overflow = "auto";
+    document.body.classList.remove("auth-active");
+    if (els.app) { els.app.classList.remove("hidden"); els.app.style.display = "block"; }
+    if (els.userEmail) els.userEmail.textContent = user.email || "";
+    const payEmail = document.getElementById("payEmail");
+    if (payEmail && user.email) payEmail.value = user.email;
+    render(); startTimer(); refreshBalance(); window.scrollTo(0, 0);
+  }
+
+  function render() {
+    const walletBtn = document.getElementById("walletBtn");
+    const balanceText = money(state.balance);
+    if (els.walletBalance) els.walletBalance.textContent = balanceText;
+    if (walletBtn) walletBtn.textContent = balanceText; // FIXED
+    if (els.heroPrice) els.heroPrice.textContent = money(local.price);
+    if (els.modalCountry) els.modalCountry.textContent = `${local.flag} ${local.currency}`;
+    if (els.modalBalance) els.modalBalance.textContent = balanceText;
+    if (els.servicesTitle) els.servicesTitle.textContent = `${PHONE_COUNTRIES.length} Countries - ${money(local.price)} each • ${selected.flag} ${selected.name}`;
+
+    if (els.phoneCountryRow) {
+      els.phoneCountryRow.innerHTML = "";
+      PHONE_COUNTRIES.filter(c => c.name.toLowerCase().includes(state.search.toLowerCase()) || c.prefix.includes(state.search)).forEach(c => {
+        const b = document.createElement("button");
+        b.className = "country-chip" + (c.code === selected.code? " active" : "");
+        b.textContent = `${c.flag} ${c.name} ${c.prefix}`;
+        b.onclick = () => { selected = c; render(); };
+        els.phoneCountryRow.appendChild(b);
+      });
+    }
+    if (els.services) {
+      els.services.innerHTML = "";
+      SERVICES.forEach(service => {
+        const d = document.createElement("div");
+        d.className = "service-card";
+        d.innerHTML = `<div class="service-icon" style="background:${service.color}20">${service.icon}</div><div class="service-info"><div class="service-name">${service.name}</div><div class="service-meta">${selected.flag} ${selected.prefix}</div></div><div><div style="font-weight:800">${money(local.price)}</div><button data-id="${service.id}" class="buy-btn">Buy</button></div>`;
+        els.services.appendChild(d);
+      });
+    }
+    if (!state.active) { if (els.activeOrder) els.activeOrder.classList.add("hidden"); return; }
+    if (els.activeOrder) els.activeOrder.classList.remove("hidden");
+    if (els.orderService) els.orderService.textContent = `${state.active.icon} ${state.active.name}`;
+    if (els.phoneNumber) els.phoneNumber.textContent = state.active.phone;
+    if (els.orderStatus) els.orderStatus.textContent = `${selected.name} - REAL NUMBER`;
+    if (state.active.otp) {
+      if (els.otpBox) els.otpBox.classList.remove("hidden");
+      if (els.waitingText) els.waitingText.classList.add("hidden");
+      if (els.otpCode) els.otpCode.textContent = state.active.otp;
+    } else {
+      if (els.otpBox) els.otpBox.classList.add("hidden");
+      if (els.waitingText) { els.waitingText.classList.remove("hidden"); els.waitingText.textContent = "Waiting for REAL SMS..."; }
+    }
+  }
+
+  function startTimer() {
+    clearInterval(timerInt);
+    timerInt = setInterval(() => {
+      if (!state.active) return;
+      const remaining = Math.max(0, Math.floor((state.active.expiresAt - Date.now()) / 1000));
+      if (els.timer) els.timer.textContent = `${Math.floor(remaining / 60)}:${String(remaining % 60).padStart(2,"0")}`;
+      if (els.timerProgress) { const p = Math.max(0, Math.min(100, (remaining / 900) * 100)); els.timerProgress.style.width = `${p}%`; }
+      if (remaining <= 0) { state.active = null; clearInterval(pollInt); render(); }
+    }, 1000);
+  }
+
+  function startPolling(orderId) {
+    clearInterval(pollInt);
+    pollInt = setInterval(async () => {
+      try {
+        const token = getToken();
+        if (!token) { clearInterval(pollInt); return; }
+        const res = await fetchWithAuth(`${API_URL}/api/orders/${orderId}`);
+        if (!res) { clearInterval(pollInt); return; }
+        const data = await res.json();
+        if (data.success && data.order && data.order.otp) {
+          if (state.active) state.active.otp = data.order.otp;
+          render(); toast("REAL OTP Received: " + data.order.otp); clearInterval(pollInt);
+        }
+      } catch (e) { console.log("OTP polling error:", e); }
+    }, 5000);
+  }
+
+  window.setAmount = function(value) { const input = document.getElementById("customAmount"); if (input) input.value = value; };
+  window.payCustom = function() {
+    const input = document.getElementById("customAmount");
+    const amount = input? Number(input.value) : 0;
+    if (!amount || amount < 100) { toast("Enter amount minimum ₦100"); return; }
+    payNow(amount);
+  };
+
+  window.payNow = async function(amount) {
+    const emailInput = document.getElementById("payEmail");
+    const status = document.getElementById("payStatus");
+    const token = getToken();
+    const email = (emailInput && emailInput.value.trim()) || (currentUser && currentUser.email) || (els.userEmail && els.userEmail.textContent.trim()) || "";
+    if (!email ||!email.includes("@")) { toast("Enter valid email"); return; }
+    if (!token) { toast("Please login again"); return; }
+    if (status) status.textContent = "⏳ Redirecting to Paystack...";
+    try {
+      const res = await fetch(`${API_URL}/api/pay/initialize`, {
+        method:"POST",
+        headers:{ "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ email: email.toLowerCase(), amount: Number(amount) })
+      });
+      const data = await res.json();
+      if (data.status && data.data && data.data.authorization_url) {
+        window.location.href = data.data.authorization_url;
+      } else {
+        const msg = data.message || "Payment initialization failed";
+        if (status) status.textContent = "❌ " + msg;
+        toast("Payment error: " + msg);
+      }
+    } catch (error) {
+      if (status) status.textContent = "❌ Network error";
+      toast("Payment connection failed");
+    }
+  };
+
+  async function checkPaymentReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const reference = params.get("reference");
+    if (!reference) return;
+    const token = getToken();
+    if (!token) { toast("Please login again to verify payment"); return; }
+    toast("Verifying payment...");
+    try {
+      const res = await fetchWithAuth(`${API_URL}/api/pay/verify?reference=${encodeURIComponent(reference)}`);
+      if (!res) return;
+      const data = await res.json();
+      if (data.success) {
+        if (currentUser) {
+          currentUser.balances = data.balances || {};
+          localStorage.setItem("otphub_user", JSON.stringify(currentUser));
+        }
+        state.balance = Number(data.balances?.nigeria?? data.balances?.[local.code]?? 0);
+        render();
+        showPaymentSuccess(data.amount, data.balances || {});
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(()=>refreshBalance(), 1000);
+      } else {
+        toast(data.message || "Payment verification failed");
+      }
+    } catch (error) {
+      console.error("Payment verification error:", error);
+      toast("Payment verification failed");
+    }
+  }
+
+  if (els.tabLogin) els.tabLogin.onclick = () => { els.tabLogin.classList.add("active"); els.tabRegister.classList.remove("active"); els.loginForm.classList.remove("hidden"); els.registerForm.classList.add("hidden"); };
+  if (els.tabRegister) els.tabRegister.onclick = () => { els.tabRegister.classList.add("active"); els.tabLogin.classList.remove("active"); els.registerForm.classList.remove("hidden"); els.loginForm.classList.add("hidden"); };
+
+  if (els.registerForm) els.registerForm.onsubmit = async e => {
+    e.preventDefault();
+    const email = $("regEmail").value.trim().toLowerCase();
+    const password = $("regPass").value, password2 = $("regPass2").value;
+    if (password.length < 6) { toast("Password must be at least 6 characters"); return; }
+    if (password!== password2) { toast("Passwords don't match"); return; }
+    try {
+      const res = await fetch(`${API_URL}/api/auth/register`, { method:"POST", headers:{ "Content-Type": "application/json" }, body:JSON.stringify({ email, password }) });
+      const data = await res.json();
+      if (!data.success) { toast(data.message || "Register failed"); return; }
+      showApp(data.user, data.token); toast("Account created!");
+    } catch (error) { toast("Backend not reachable"); }
+  };
+
+  if (els.loginForm) els.loginForm.onsubmit = async e => {
+    e.preventDefault();
+    const email = $("loginEmail").value.trim().toLowerCase(), password = $("loginPass").value;
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, { method:"POST", headers:{ "Content-Type": "application/json" }, body:JSON.stringify({ email, password }) });
+      const data = await res.json();
+      if (!data.success) { toast(data.message || "Login failed"); return; }
+      showApp(data.user, data.token); toast("Logged in!");
+    } catch (error) { toast("Backend not reachable"); }
+  };
+
+  if (els.services) els.services.onclick = async e => {
+    const button = e.target.closest(".buy-btn"); if (!button) return;
+    await refreshBalance();
+    if (state.balance < Number(local.price)) {
+      if (els.activeOrder) els.activeOrder.classList.remove("hidden");
+      if (els.phoneNumber) els.phoneNumber.textContent = "insufficient balance add money";
+      if (els.orderStatus) els.orderStatus.textContent = "Low Balance";
+      if (els.topupModal) els.topupModal.classList.remove("hidden");
+      toast("Insufficient balance. Add money."); return;
+    }
+    const serviceId = button.dataset.id; button.textContent = "Buying..."; button.disabled = true;
+    try {
+      const token = getToken();
+      if (!token) { toast("Please login again"); button.textContent = "Buy"; button.disabled = false; return; }
+      const res = await fetchWithAuth(`${API_URL}/api/orders`, { method:"POST", headers:{ "Content-Type": "application/json" }, body:JSON.stringify({ country: selected.code, service: serviceId }) });
+      if (!res) { button.textContent = "Buy"; button.disabled = false; return; }
+      const data = await res.json();
+      if (!data.success) { button.textContent = "Buy"; button.disabled = false; toast(data.message || "Buy failed"); return; }
+      if (data.balances) {
+        if (!currentUser) currentUser = {};
+        currentUser.balances = data.balances;
+        localStorage.setItem("otphub_user", JSON.stringify(currentUser));
+        state.balance = Number(data.balances[local.code]?? data.balances.nigeria?? 0);
+      }
+      const serviceInfo = SERVICES.find(s => s.id === serviceId);
+      state.active = { id: data.order.id, name: serviceInfo? serviceInfo.name : serviceId, icon: serviceInfo? serviceInfo.icon : "💬", phone: data.order.phone, otp: data.order.otp || null, expiresAt: Date.now() + 900000 };
+      render(); startTimer(); startPolling(data.order.id); toast("REAL number bought: " + data.order.phone);
+    } catch (error) { console.error(error); toast("Error buying number"); button.textContent = "Buy"; button.disabled = false; }
+  };
+
+  function openDeposit() {
+    if (!els.topupModal) return;
+    els.topupModal.classList.remove("hidden");
+    const loggedEmail = currentUser?.email || (els.userEmail? els.userEmail.textContent : "");
+    const payEmailInput = document.getElementById("payEmail");
+    if (payEmailInput && loggedEmail && loggedEmail.includes("@")) payEmailInput.value = loggedEmail.trim();
+  }
+  const walletBtn = $("walletBtn"); if (walletBtn) walletBtn.onclick = openDeposit;
+  const depositBtn = $("depositBtn"); if (depositBtn) depositBtn.onclick = openDeposit;
+  const closeModalBtn = $("closeModalBtn"); if (closeModalBtn) closeModalBtn.onclick = () => { if (els.topupModal) els.topupModal.classList.add("hidden"); };
+  if (els.otpBox) els.otpBox.onclick = () => { if (state.active && state.active.otp) { navigator.clipboard.writeText(state.active.otp); toast("Copied " + state.active.otp); } };
+  if (els.phoneSearch) els.phoneSearch.oninput = e => { state.search = e.target.value; render(); };
+  const logoutBtn = $("logoutBtn"); if (logoutBtn) logoutBtn.onclick = () => { localStorage.removeItem("otphub_token"); localStorage.removeItem("otphub_user"); location.reload(); };
+
+  const savedUser = localStorage.getItem("otphub_user"), savedToken = localStorage.getItem("otphub_token");
+  if (savedUser && savedToken) { try { const user = JSON.parse(savedUser); showApp(user, savedToken); } catch (error) { localStorage.removeItem("otphub_user"); localStorage.removeItem("otphub_token"); } }
+  checkPaymentReturn();
+  render();
+});
+ 
