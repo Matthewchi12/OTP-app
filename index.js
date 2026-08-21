@@ -3,20 +3,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const fixStyle = document.createElement("style");
   fixStyle.textContent = `
- .hidden { display: none!important; }
+.hidden { display: none!important; }
     #authScreen { position: fixed; inset: 0; z-index: 9999; overflow-y: auto; background: #0f0f0f; }
     #app { min-height: 100vh; max-width: 100vw; overflow-x: hidden; }
     #successModal { position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; }
     #successModal.box { background: #1a1a1a; padding: 24px; border-radius: 16px; text-align: center; max-width: 340px; width: 90%; }
-  /* --- SPINNER ADDED --- */
+
+  /* --- FIXED SPINNER --- */
   #initialLoader { position: fixed; inset: 0; z-index: 99999; background: #0f0f0f; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; transition: opacity 0.4s ease; }
   #initialLoader p { color: #aaa; font-family: sans-serif; font-size: 14px; }
- .spinner { width: 48px; height: 48px; border: 4px solid #222; border-top-color: #25D366; border-radius: 50%; animation: spin 0.9s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+ .spinner { width: 48px; height: 48px; border: 4px solid #222; border-top: 4px solid #25D366; border-radius: 50%; animation: otphubSpin 0.9s linear infinite!important; display: block; }
+  @keyframes otphubSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   `;
   document.head.appendChild(fixStyle);
 
-  // --- SPINNER ADDED ---
   let initialLoader = document.getElementById("initialLoader");
   if (!initialLoader) {
     initialLoader = document.createElement("div");
@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(() => l.remove(), 400);
     }
   }
-  // --- END SPINNER ADDED ---
 
   const LOCAL_CURRENCIES = [
     { code: "nigeria", name: "Nigeria", flag: "🇳🇬", currency: "NGN", symbol: "₦", price: 2000, topups: [5000, 10000, 20000] },
@@ -184,7 +183,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (els.userEmail) els.userEmail.textContent = user.email || "";
     const payEmail = document.getElementById("payEmail");
     if (payEmail && user.email) payEmail.value = user.email;
-    render(); hideInitialLoader(); startTimer(); refreshBalance(); window.scrollTo(0, 0);
+    render();
+    startTimer();
+    refreshBalance();
+    window.scrollTo(0, 0);
+    // FIXED: delay hide so spinner rotates after login
+    setTimeout(() => hideInitialLoader(), 600);
   }
 
   function render() {
@@ -404,6 +408,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (savedUser && savedToken) { try { const user = JSON.parse(savedUser); showApp(user, savedToken); } catch (error) { localStorage.removeItem("otphub_user"); localStorage.removeItem("otphub_token"); } }
   checkPaymentReturn();
   render();
-  // --- SPINNER ADDED ---
-  setTimeout(() => hideInitialLoader(), 800);
+  // Hide loader after first render for guests
+  if (!savedUser) {
+    setTimeout(() => hideInitialLoader(), 1000);
+  }
 });
